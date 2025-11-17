@@ -1,76 +1,96 @@
-# Générateur de mosaïque - Webtool
-  ***Mots-clés** : forme, couleur, densité*<br>
-  
-  Références :
-  - [Padrão Geométrico Guilherme Vieira](https://p5js.org/sketches/2225777/)
-  - [Colorful Dots Yutorehito_](https://p5js.org/sketches/2225254/)
-  - [The Poetry of Clouds StungEye](https://p5js.org/sketches/2225715/)
-  - [Circle Square Triangle](https://nicolastilly.github.io/Circle-Square-Triangle/)
+# Générateur de mosaïque — Webtool
+***Mots-clés :** forme, couleur, densité*<br>
 
-Un outil web simple et intuitif permettant de générer une mosaïque à partir de formes prédéfinies, directement manipulables sur le canevas.  
-Le projet met l’accent sur l’interaction directe et la création graphique accessible, sans interface complexe.
+**Références :**
+- [Padrão Geométrico — Guilherme Vieira](https://p5js.org/sketches/2225777/)
+- [Colorful Dots — Yutorehito_](https://p5js.org/sketches/2225254/)
+- [The Poetry of Clouds — StungEye](https://p5js.org/sketches/2225715/)
+- [Circle Square Triangle](https://nicolastilly.github.io/Circle-Square-Triangle/)
+
+Un outil web simple et intuitif permettant de générer une mosaïque graphique à partir de formes prédéfinies.  
+Le projet met l’accent sur une **interface claire et accessible**, permettant à l’utilisateur de personnaliser son visuel sans difficulté.
 
 ## 🎨 Concept
 
-Ce webtool permet de créer une mosaïque visuelle en utilisant un ensemble de formes prédéfinies (**carrés, cercles, triangles, etc.**).  
-Une fois le visuel final obtenu, l’utilisateur peut le télécharger en différents formats : **.png**, **.svg**, ou **.jpg**.
+Ce webtool permet de créer une mosaïque visuelle en sélectionnant et configurant des formes prédéfinies (**carrés, cercles, triangles, etc.**) via une interface dédiée.  
+Une fois la mosaïque finalisée, l’utilisateur peut l’exporter aux formats **.png**, **.svg** ou **.jpg**.
 
 ## ✨ Intention
 
-L’objectif du projet est de proposer une expérience de création graphique à la fois **simple, ludique et accessible**.  
-Toutes les manipulations se font directement **sur le canevas**, sans panneau d’outils latéral, afin de privilégier une interaction naturelle et intuitive.
+L’objectif est d’offrir une expérience de création **simple, guidée et personnalisable**, adaptée aussi bien aux débutants qu’aux utilisateurs plus curieux.  
+L’interface permet d’ajuster facilement différents paramètres visuels, tout en garantissant une prise en main rapide et sans surcharge.
 
 ## ⚙️ Fonctionnement
 
-L’outil repose uniquement sur des interactions directes :
+L’outil repose sur une interface graphique comprenant plusieurs contrôles :
 
-- **Ajouter une forme**  
+- **Choix de la forme**  
+  Sélection parmi un ensemble de formes prédéfinies.
 
-- **Déplacer une forme**  
+- **Paramètres visuels**  
+  Ajustement de la couleur, de la taille, de la densité ou de la rotation.
 
-- **Redimensionner**  
- 
-- **Rotation**  
+- **Organisation de la mosaïque**  
+  Définition de la grille, du nombre d’éléments et de leur disposition.
 
-- **Supprimer une forme**  
+- **Variations automatiques**  
+  → Possibilité d’activer des variations automatiques (couleurs aléatoires, motifs génératifs, etc.).
 
-- **Ajustements automatiques**  
-  → Certaines caractéristiques (**couleurs aléatoires, petites variations visuelles**) peuvent être générées automatiquement pour faciliter la création.
-
+- **Prévisualisation en temps réel**  
+  La mosaïque se met à jour instantanément dans le canevas.
 
 
 ## 💾 Export
 
-Une fois la mosaïque finalisée, l’utilisateur peut exporter son visuel aux formats :
+Une fois la composition finalisée, l’utilisateur peut exporter son visuel dans les formats :
 
 - **PNG**  
 - **SVG**  
 - **JPG**
 
-## Les snippets
-#### Modification des caractères :
-
+## 🧩 Snippets
+### circle()
+*Draws a circle*
 ```
-let slider;
-
 function setup() {
-  createCanvas(600, 200);
-  textAlign(CENTER, CENTER);
-  textSize(32);
+  createCanvas(100, 100);
 
-  slider = createSlider(10, 100, 32); // min, max, valeur de départ
-  slider.position(20, 20);
-}
+  background(200);
 
-function draw() {
-  background(240);
-  let size = slider.value();
-  textSize(size);
-  text("Hello p5.js!", width / 2, height / 2);
+  circle(50, 50, 25);
+
+  describe('A white circle with black outline in the middle of a gray canvas.');
 }
+```
+### ellipse()
+*Draws an ellipse (oval).*
 
 ```
+function setup() {
+  createCanvas(100, 100, WEBGL);
 
+  background(200);
+
+  // Use 6 vertices.
+  ellipse(0, 0, 80, 40, 6);
+
+  describe('A white hexagon on a gray canvas.');
+}
+```
+### rect()
+*Draws a rectangle.*
+
+```
+function setup() {
+  createCanvas(100, 100);
+
+  background(200);
+
+  rect(30, 20, 55, 55);
+
+  describe('A white square with a black outline on a gray canvas.');
+}
+```
 ![alt text](image.png)
 
 
