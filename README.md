@@ -91,6 +91,143 @@ function setup() {
   describe('A white square with a black outline on a gray canvas.');
 }
 ```
+
+### push()
+*Begins a drawing group that contains its own styles and transformations.*
+
+```
+function setup() {
+  createCanvas(100, 100);
+
+  background(200);
+
+  // Draw the left circle.
+  circle(25, 50, 20);
+
+  // Begin the drawing group.
+  push();
+
+  // Translate the origin to the center.
+  translate(50, 50);
+
+  // Style the circle.
+  strokeWeight(5);
+  stroke('royalblue');
+  fill('orange');
+
+  // Draw the circle.
+  circle(0, 0, 20);
+
+  // End the drawing group.
+  pop();
+
+  // Draw the right circle.
+  circle(75, 50, 20);
+
+  describe(
+    'Three circles drawn in a row on a gray background. The left and right circles are white with thin, black borders. The middle circle is orange with a thick, blue border.'
+  );
+}
+```
+
+### scale()
+*The scale() function scales the current coordinate system by the specified factor.*
+
+```
+function setup() {
+  // Create the canvas
+  createCanvas(720, 400);
+
+  // Create screen reader accessible description
+  textOutput();
+}
+
+function draw() {
+  // Clear the background
+  background(0);
+
+  // Draw blue square
+  // Save current coordinate system
+  push();
+
+  // Scale by 2
+  scale(2);
+
+  // Set color to blue
+  fill(33, 89, 194);
+
+  // Draw square at origin, size 200
+  square(0, 0, 200);
+
+  // Restore coordinate system
+  pop();
+
+  // Draw white square
+  // Set color to white
+  fill(255);
+
+  // Draw square at origin, size 200
+  square(0, 0, 200);
+
+  // Draw green square
+  // Save current coordinate system
+  push();
+
+  // Scale by .5 in x and .75 in y
+  scale(0.5, 0.75);
+
+  // Set color to green
+  fill(42, 150, 60);
+
+  // Draw square at origin, size 200
+  square(0, 0, 200);
+
+  // Restore coordinate system
+  pop();
+}
+```
+### random()
+*Returns a random number or a random element from an array.*
+
+```
+function setup() {
+  createCanvas(100, 100);
+
+  background(200);
+
+  // Get random coordinates between 0 and 100.
+  let x = random(0, 100);
+  let y = random(0, 100);
+
+  // Draw a point.
+  strokeWeight(5);
+  point(x, y);
+
+  describe('A black dot appears in a random position on a gray square.');
+}
+```
+### rotate()
+*Rotates the coordinate system.*
+
+```
+function setup() {
+  createCanvas(100, 100);
+
+  describe(
+    "A white rectangle on a gray background. The rectangle's long axis runs from top-left to bottom-right."
+  );
+}
+
+function draw() {
+  background(200);
+
+  // Rotate the coordinate system 1/8 turn.
+  rotate(QUARTER_PI);
+
+  // Draw a rectangle at coordinates (50, 0).
+  rect(50, 0, 40, 20);
+}
+```
 ![alt text](image.png)
 
 
