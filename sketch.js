@@ -100,17 +100,26 @@ function setup() {
     necesiteRedessiner = true;
   });
 
+  // MODIFIÉ : Empêcher la propagation de l'événement click sur la checkbox
   caseCercles.elt.addEventListener('click', (e) => {
     e.stopPropagation();
   });
 
+  // NOUVEAU : Conteneur pour le chevron (zone cliquable pour le toggle)
+  let chevronContainerCercles = createDiv();
+  chevronContainerCercles.parent(headerCercles);
+  chevronContainerCercles.class('chevron-container');
+
   chevronCercles = createSpan('▶');
-  chevronCercles.parent(headerCercles);
+  chevronCercles.parent(chevronContainerCercles);
   chevronCercles.class('chevron');
 
-  headerCercles.mousePressed(() => {
+  // MODIFIÉ : Clic uniquement sur le conteneur du chevron
+  chevronContainerCercles.mousePressed(() => {
     toggleCurseur(conteneurCurseurCercles, chevronCercles);
   });
+
+  // SUPPRIMÉ : headerCercles.mousePressed()
 
   conteneurCurseurCercles = createDiv();
   conteneurCurseurCercles.parent(conteneurCercles);
@@ -234,11 +243,16 @@ function setup() {
     e.stopPropagation();
   });
 
+  // NOUVEAU : Conteneur pour le chevron
+  let chevronContainerCarres = createDiv();
+  chevronContainerCarres.parent(headerCarres);
+  chevronContainerCarres.class('chevron-container');
+
   chevronCarres = createSpan('▶');
-  chevronCarres.parent(headerCarres);
+  chevronCarres.parent(chevronContainerCarres);
   chevronCarres.class('chevron');
 
-  headerCarres.mousePressed(() => {
+  chevronContainerCarres.mousePressed(() => {
     toggleCurseur(conteneurCurseurCarres, chevronCarres);
   });
 
@@ -364,11 +378,16 @@ function setup() {
     e.stopPropagation();
   });
 
+  // NOUVEAU : Conteneur pour le chevron
+  let chevronContainerTriangles = createDiv();
+  chevronContainerTriangles.parent(headerTriangles);
+  chevronContainerTriangles.class('chevron-container');
+
   chevronTriangles = createSpan('▶');
-  chevronTriangles.parent(headerTriangles);
+  chevronTriangles.parent(chevronContainerTriangles);
   chevronTriangles.class('chevron');
 
-  headerTriangles.mousePressed(() => {
+  chevronContainerTriangles.mousePressed(() => {
     toggleCurseur(conteneurCurseurTriangles, chevronTriangles);
   });
 
@@ -638,7 +657,7 @@ function genererNouveauMotifAleatoire() {
   if (caseCarres) caseCarres.checked(afficherCarres);
   if (caseTriangles) caseTriangles.checked(afficherTriangles);
   
-  // Randomiser les états d'unification
+  // Randomiser les états d'unification taille
   unifierCercles = random() > 0.7;
   unifierCarres = random() > 0.7;
   unifierTriangles = random() > 0.7;

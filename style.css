@@ -103,12 +103,22 @@ canvas {
   align-items: center;
   gap: 8px;
   margin-bottom: 5px;
-  cursor: pointer;
   user-select: none;
 }
 
-.forme-controle-header:hover {
-  opacity: 0.8;
+/* NOUVEAU : Conteneur cliquable pour le chevron */
+.chevron-container {
+  display: flex;
+  align-items: center;
+  padding: 4px 8px;
+  margin-left: auto;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.chevron-container:hover {
+  background-color: rgba(0, 0, 0, 0.05);
 }
 
 /* Icône chevron pour indiquer l'état ouvert/fermé */
