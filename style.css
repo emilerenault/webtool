@@ -131,7 +131,7 @@ canvas {
 }
 
 .curseur-container.ouvert {
-  max-height: 150px; /* Augmenté pour accueillir le toggle */
+  max-height: 300px; /* Augmenté pour plus d'espace */
 }
 
 .forme-controle input[type="range"] {
@@ -143,6 +143,13 @@ canvas {
   font-size: 11px;
   color: #555;
   margin: 0;
+}
+
+.forme-controle .mini-label {
+  margin: 8px 0 3px 0;
+  font-size: 10px;
+  color: #666;
+  font-weight: bold;
 }
 
 /* Toggle switch pour unifier les tailles */

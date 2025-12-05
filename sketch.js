@@ -8,18 +8,17 @@
 let preimage;
 let cyan, magenta, yellow, black;
 let cg;
-let seedMotif = 42; // NOUVEAU : seed pour générer toujours le même motif
+let seedMotif = 42;
 
 // ============================================================================
 // SECTION 2 : VARIABLES DE PARAMÈTRES UTILISATEUR
 // ============================================================================
 let selecteurDisposition;
-let curseurDensite, curseurOpacite, curseurEpaisseur;
+let curseurDensite;
 let caseCercles, caseCarres, caseTriangles;
 let curseurEchelleCercles, curseurEchelleCarres, curseurEchelleTriangles;
 let conteneurCurseurCercles, conteneurCurseurCarres, conteneurCurseurTriangles;
 let chevronCercles, chevronCarres, chevronTriangles;
-let valeurOpacite, valeurEpaisseur;
 let paletteInputs = [];
 let palettePreviews = [];
 let palettePickers = [];
@@ -32,21 +31,21 @@ let echelleTriangles = 1;
 let unifierCercles = false;
 let unifierCarres = false;
 let unifierTriangles = false;
-let opaciteForme = 1;
+let formesCrecsesCercles = false;
+let formesCreusesCarres = false;
+let formesCreusesTriangles = false;
+let epaisseurContourCercles = 2; // MODIFIÉ : épaisseur individuelle
+let epaisseurContourCarres = 2;
+let epaisseurContourTriangles = 2;
+// NOUVEAU : Opacité individuelle pour chaque forme
+let opaciteFormeCercles = 1;
+let opaciteFormeCarres = 1;
+let opaciteFormeTriangles = 1;
 let necesiteRedessiner = true;
 let melangerFormes = true;
 let afficherCercles = true;
 let afficherCarres = true;
 let afficherTriangles = true;
-let formesCreuses = false;
-let epaisseurContour = 2;
-
-// ============================================================================
-// FONCTION : preload()
-// ============================================================================
-function preload() {
-  // Optionnel : charger une image personnalisée
-}
 
 // ============================================================================
 // FONCTION : setup()
@@ -117,6 +116,7 @@ function setup() {
   conteneurCurseurCercles.parent(conteneurCercles);
   conteneurCurseurCercles.class('curseur-container');
 
+  // Taille
   curseurEchelleCercles = createSlider(0.5, 3, 1, 0.1);
   curseurEchelleCercles.parent(conteneurCurseurCercles);
   curseurEchelleCercles.input(() => {
@@ -129,31 +129,89 @@ function setup() {
   valeurEchelleCercles.parent(conteneurCurseurCercles);
   valeurEchelleCercles.class('mini-valeur');
 
-  // Toggle pour unifier les cercles
-  let toggleContainerCercles = createDiv();
-  toggleContainerCercles.parent(conteneurCurseurCercles);
-  toggleContainerCercles.class('toggle-container');
+  // NOUVEAU : Opacité
+  let labelOpaciteCercles = createP('Opacité');
+  labelOpaciteCercles.parent(conteneurCurseurCercles);
+  labelOpaciteCercles.class('mini-label');
 
-  let toggleLabelCercles = createSpan('Taille uniforme');
-  toggleLabelCercles.parent(toggleContainerCercles);
-  toggleLabelCercles.class('toggle-label');
-
-  let toggleSwitchCercles = createDiv();
-  toggleSwitchCercles.parent(toggleContainerCercles);
-  toggleSwitchCercles.class('toggle-switch');
-
-  let checkboxCercles = createInput();
-  checkboxCercles.attribute('type', 'checkbox');
-  checkboxCercles.parent(toggleSwitchCercles);
-  if (unifierCercles) checkboxCercles.elt.checked = true;
-  checkboxCercles.changed(() => {
-    unifierCercles = checkboxCercles.elt.checked;
+  let curseurOpaciteCercles = createSlider(0, 1, 1, 0.01);
+  curseurOpaciteCercles.parent(conteneurCurseurCercles);
+  curseurOpaciteCercles.input(() => {
+    opaciteFormeCercles = curseurOpaciteCercles.value();
+    valeurOpaciteCercles.html(opaciteFormeCercles.toFixed(2));
     necesiteRedessiner = true;
   });
 
-  let sliderCercles = createSpan('');
-  sliderCercles.parent(toggleSwitchCercles);
-  sliderCercles.class('toggle-slider');
+  let valeurOpaciteCercles = createP(opaciteFormeCercles.toFixed(2));
+  valeurOpaciteCercles.parent(conteneurCurseurCercles);
+  valeurOpaciteCercles.class('mini-valeur');
+
+  // Toggle unification taille
+  let toggleContainerUnifierCercles = createDiv();
+  toggleContainerUnifierCercles.parent(conteneurCurseurCercles);
+  toggleContainerUnifierCercles.class('toggle-container');
+
+  let toggleLabelUnifierCercles = createSpan('Taille uniforme');
+  toggleLabelUnifierCercles.parent(toggleContainerUnifierCercles);
+  toggleLabelUnifierCercles.class('toggle-label');
+
+  let toggleSwitchUnifierCercles = createDiv();
+  toggleSwitchUnifierCercles.parent(toggleContainerUnifierCercles);
+  toggleSwitchUnifierCercles.class('toggle-switch');
+
+  let checkboxUnifierCercles = createInput();
+  checkboxUnifierCercles.attribute('type', 'checkbox');
+  checkboxUnifierCercles.parent(toggleSwitchUnifierCercles);
+  checkboxUnifierCercles.changed(() => {
+    unifierCercles = checkboxUnifierCercles.elt.checked;
+    necesiteRedessiner = true;
+  });
+
+  let sliderUnifierCercles = createSpan('');
+  sliderUnifierCercles.parent(toggleSwitchUnifierCercles);
+  sliderUnifierCercles.class('toggle-slider');
+
+  // Toggle formes creuses
+  let toggleContainerCreuxCercles = createDiv();
+  toggleContainerCreuxCercles.parent(conteneurCurseurCercles);
+  toggleContainerCreuxCercles.class('toggle-container');
+
+  let toggleLabelCreuxCercles = createSpan('Tracé uniquement');
+  toggleLabelCreuxCercles.parent(toggleContainerCreuxCercles);
+  toggleLabelCreuxCercles.class('toggle-label');
+
+  let toggleSwitchCreuxCercles = createDiv();
+  toggleSwitchCreuxCercles.parent(toggleContainerCreuxCercles);
+  toggleSwitchCreuxCercles.class('toggle-switch');
+
+  let checkboxCreuxCercles = createInput();
+  checkboxCreuxCercles.attribute('type', 'checkbox');
+  checkboxCreuxCercles.parent(toggleSwitchCreuxCercles);
+  checkboxCreuxCercles.changed(() => {
+    formesCrecsesCercles = checkboxCreuxCercles.elt.checked;
+    necesiteRedessiner = true;
+  });
+
+  let sliderCreuxCercles = createSpan('');
+  sliderCreuxCercles.parent(toggleSwitchCreuxCercles);
+  sliderCreuxCercles.class('toggle-slider');
+
+  // NOUVEAU : Épaisseur du tracé pour cercles
+  let labelEpaisseurCercles = createP('Épaisseur tracé (px)');
+  labelEpaisseurCercles.parent(conteneurCurseurCercles);
+  labelEpaisseurCercles.class('mini-label');
+
+  let curseurEpaisseurCercles = createSlider(0.5, 10, 2, 0.5);
+  curseurEpaisseurCercles.parent(conteneurCurseurCercles);
+  curseurEpaisseurCercles.input(() => {
+    epaisseurContourCercles = curseurEpaisseurCercles.value();
+    valeurEpaisseurCercles.html(epaisseurContourCercles.toFixed(1) + ' px');
+    necesiteRedessiner = true;
+  });
+
+  let valeurEpaisseurCercles = createP(epaisseurContourCercles.toFixed(1) + ' px');
+  valeurEpaisseurCercles.parent(conteneurCurseurCercles);
+  valeurEpaisseurCercles.class('mini-valeur');
 
   // --- CARRÉS ---
   let conteneurCarres = createDiv();
@@ -188,6 +246,7 @@ function setup() {
   conteneurCurseurCarres.parent(conteneurCarres);
   conteneurCurseurCarres.class('curseur-container');
 
+  // Taille
   curseurEchelleCarres = createSlider(0.5, 3, 1, 0.1);
   curseurEchelleCarres.parent(conteneurCurseurCarres);
   curseurEchelleCarres.input(() => {
@@ -200,30 +259,89 @@ function setup() {
   valeurEchelleCarres.parent(conteneurCurseurCarres);
   valeurEchelleCarres.class('mini-valeur');
 
-  let toggleContainerCarres = createDiv();
-  toggleContainerCarres.parent(conteneurCurseurCarres);
-  toggleContainerCarres.class('toggle-container');
+  // NOUVEAU : Opacité
+  let labelOpaciteCarres = createP('Opacité');
+  labelOpaciteCarres.parent(conteneurCurseurCarres);
+  labelOpaciteCarres.class('mini-label');
 
-  let toggleLabelCarres = createSpan('Taille uniforme');
-  toggleLabelCarres.parent(toggleContainerCarres);
-  toggleLabelCarres.class('toggle-label');
-
-  let toggleSwitchCarres = createDiv();
-  toggleSwitchCarres.parent(toggleContainerCarres);
-  toggleSwitchCarres.class('toggle-switch');
-
-  let checkboxCarres = createInput();
-  checkboxCarres.attribute('type', 'checkbox');
-  checkboxCarres.parent(toggleSwitchCarres);
-  if (unifierCarres) checkboxCarres.elt.checked = true;
-  checkboxCarres.changed(() => {
-    unifierCarres = checkboxCarres.elt.checked;
+  let curseurOpaciteCarres = createSlider(0, 1, 1, 0.01);
+  curseurOpaciteCarres.parent(conteneurCurseurCarres);
+  curseurOpaciteCarres.input(() => {
+    opaciteFormeCarres = curseurOpaciteCarres.value();
+    valeurOpaciteCarres.html(opaciteFormeCarres.toFixed(2));
     necesiteRedessiner = true;
   });
 
-  let sliderCarres = createSpan('');
-  sliderCarres.parent(toggleSwitchCarres);
-  sliderCarres.class('toggle-slider');
+  let valeurOpaciteCarres = createP(opaciteFormeCarres.toFixed(2));
+  valeurOpaciteCarres.parent(conteneurCurseurCarres);
+  valeurOpaciteCarres.class('mini-valeur');
+
+  // Toggle unification taille
+  let toggleContainerUnifierCarres = createDiv();
+  toggleContainerUnifierCarres.parent(conteneurCurseurCarres);
+  toggleContainerUnifierCarres.class('toggle-container');
+
+  let toggleLabelUnifierCarres = createSpan('Taille uniforme');
+  toggleLabelUnifierCarres.parent(toggleContainerUnifierCarres);
+  toggleLabelUnifierCarres.class('toggle-label');
+
+  let toggleSwitchUnifierCarres = createDiv();
+  toggleSwitchUnifierCarres.parent(toggleContainerUnifierCarres);
+  toggleSwitchUnifierCarres.class('toggle-switch');
+
+  let checkboxUnifierCarres = createInput();
+  checkboxUnifierCarres.attribute('type', 'checkbox');
+  checkboxUnifierCarres.parent(toggleSwitchUnifierCarres);
+  checkboxUnifierCarres.changed(() => {
+    unifierCarres = checkboxUnifierCarres.elt.checked;
+    necesiteRedessiner = true;
+  });
+
+  let sliderUnifierCarres = createSpan('');
+  sliderUnifierCarres.parent(toggleSwitchUnifierCarres);
+  sliderUnifierCarres.class('toggle-slider');
+
+  // Toggle formes creuses
+  let toggleContainerCreuxCarres = createDiv();
+  toggleContainerCreuxCarres.parent(conteneurCurseurCarres);
+  toggleContainerCreuxCarres.class('toggle-container');
+
+  let toggleLabelCreuxCarres = createSpan('Tracé uniquement');
+  toggleLabelCreuxCarres.parent(toggleContainerCreuxCarres);
+  toggleLabelCreuxCarres.class('toggle-label');
+
+  let toggleSwitchCreuxCarres = createDiv();
+  toggleSwitchCreuxCarres.parent(toggleContainerCreuxCarres);
+  toggleSwitchCreuxCarres.class('toggle-switch');
+
+  let checkboxCreuxCarres = createInput();
+  checkboxCreuxCarres.attribute('type', 'checkbox');
+  checkboxCreuxCarres.parent(toggleSwitchCreuxCarres);
+  checkboxCreuxCarres.changed(() => {
+    formesCreusesCarres = checkboxCreuxCarres.elt.checked;
+    necesiteRedessiner = true;
+  });
+
+  let sliderCreuxCarres = createSpan('');
+  sliderCreuxCarres.parent(toggleSwitchCreuxCarres);
+  sliderCreuxCarres.class('toggle-slider');
+
+  // NOUVEAU : Épaisseur du tracé pour carrés
+  let labelEpaisseurCarres = createP('Épaisseur tracé (px)');
+  labelEpaisseurCarres.parent(conteneurCurseurCarres);
+  labelEpaisseurCarres.class('mini-label');
+
+  let curseurEpaisseurCarres = createSlider(0.5, 10, 2, 0.5);
+  curseurEpaisseurCarres.parent(conteneurCurseurCarres);
+  curseurEpaisseurCarres.input(() => {
+    epaisseurContourCarres = curseurEpaisseurCarres.value();
+    valeurEpaisseurCarres.html(epaisseurContourCarres.toFixed(1) + ' px');
+    necesiteRedessiner = true;
+  });
+
+  let valeurEpaisseurCarres = createP(epaisseurContourCarres.toFixed(1) + ' px');
+  valeurEpaisseurCarres.parent(conteneurCurseurCarres);
+  valeurEpaisseurCarres.class('mini-valeur');
 
   // --- TRIANGLES ---
   let conteneurTriangles = createDiv();
@@ -258,6 +376,7 @@ function setup() {
   conteneurCurseurTriangles.parent(conteneurTriangles);
   conteneurCurseurTriangles.class('curseur-container');
 
+  // Taille
   curseurEchelleTriangles = createSlider(0.5, 3, 1, 0.1);
   curseurEchelleTriangles.parent(conteneurCurseurTriangles);
   curseurEchelleTriangles.input(() => {
@@ -270,30 +389,89 @@ function setup() {
   valeurEchelleTriangles.parent(conteneurCurseurTriangles);
   valeurEchelleTriangles.class('mini-valeur');
 
-  let toggleContainerTriangles = createDiv();
-  toggleContainerTriangles.parent(conteneurCurseurTriangles);
-  toggleContainerTriangles.class('toggle-container');
+  // NOUVEAU : Opacité
+  let labelOpaciteTriangles = createP('Opacité');
+  labelOpaciteTriangles.parent(conteneurCurseurTriangles);
+  labelOpaciteTriangles.class('mini-label');
 
-  let toggleLabelTriangles = createSpan('Taille uniforme');
-  toggleLabelTriangles.parent(toggleContainerTriangles);
-  toggleLabelTriangles.class('toggle-label');
-
-  let toggleSwitchTriangles = createDiv();
-  toggleSwitchTriangles.parent(toggleContainerTriangles);
-  toggleSwitchTriangles.class('toggle-switch');
-
-  let checkboxTriangles = createInput();
-  checkboxTriangles.attribute('type', 'checkbox');
-  checkboxTriangles.parent(toggleSwitchTriangles);
-  if (unifierTriangles) checkboxTriangles.elt.checked = true;
-  checkboxTriangles.changed(() => {
-    unifierTriangles = checkboxTriangles.elt.checked;
+  let curseurOpaciteTriangles = createSlider(0, 1, 1, 0.01);
+  curseurOpaciteTriangles.parent(conteneurCurseurTriangles);
+  curseurOpaciteTriangles.input(() => {
+    opaciteFormeTriangles = curseurOpaciteTriangles.value();
+    valeurOpaciteTriangles.html(opaciteFormeTriangles.toFixed(2));
     necesiteRedessiner = true;
   });
 
-  let sliderTriangles = createSpan('');
-  sliderTriangles.parent(toggleSwitchTriangles);
-  sliderTriangles.class('toggle-slider');
+  let valeurOpaciteTriangles = createP(opaciteFormeTriangles.toFixed(2));
+  valeurOpaciteTriangles.parent(conteneurCurseurTriangles);
+  valeurOpaciteTriangles.class('mini-valeur');
+
+  // Toggle unification taille
+  let toggleContainerUnifierTriangles = createDiv();
+  toggleContainerUnifierTriangles.parent(conteneurCurseurTriangles);
+  toggleContainerUnifierTriangles.class('toggle-container');
+
+  let toggleLabelUnifierTriangles = createSpan('Taille uniforme');
+  toggleLabelUnifierTriangles.parent(toggleContainerUnifierTriangles);
+  toggleLabelUnifierTriangles.class('toggle-label');
+
+  let toggleSwitchUnifierTriangles = createDiv();
+  toggleSwitchUnifierTriangles.parent(toggleContainerUnifierTriangles);
+  toggleSwitchUnifierTriangles.class('toggle-switch');
+
+  let checkboxUnifierTriangles = createInput();
+  checkboxUnifierTriangles.attribute('type', 'checkbox');
+  checkboxUnifierTriangles.parent(toggleSwitchUnifierTriangles);
+  checkboxUnifierTriangles.changed(() => {
+    unifierTriangles = checkboxUnifierTriangles.elt.checked;
+    necesiteRedessiner = true;
+  });
+
+  let sliderUnifierTriangles = createSpan('');
+  sliderUnifierTriangles.parent(toggleSwitchUnifierTriangles);
+  sliderUnifierTriangles.class('toggle-slider');
+
+  // Toggle formes creuses
+  let toggleContainerCreuxTriangles = createDiv();
+  toggleContainerCreuxTriangles.parent(conteneurCurseurTriangles);
+  toggleContainerCreuxTriangles.class('toggle-container');
+
+  let toggleLabelCreuxTriangles = createSpan('Tracé uniquement');
+  toggleLabelCreuxTriangles.parent(toggleContainerCreuxTriangles);
+  toggleLabelCreuxTriangles.class('toggle-label');
+
+  let toggleSwitchCreuxTriangles = createDiv();
+  toggleSwitchCreuxTriangles.parent(toggleContainerCreuxTriangles);
+  toggleSwitchCreuxTriangles.class('toggle-switch');
+
+  let checkboxCreuxTriangles = createInput();
+  checkboxCreuxTriangles.attribute('type', 'checkbox');
+  checkboxCreuxTriangles.parent(toggleSwitchCreuxTriangles);
+  checkboxCreuxTriangles.changed(() => {
+    formesCreusesTriangles = checkboxCreuxTriangles.elt.checked;
+    necesiteRedessiner = true;
+  });
+
+  let sliderCreuxTriangles = createSpan('');
+  sliderCreuxTriangles.parent(toggleSwitchCreuxTriangles);
+  sliderCreuxTriangles.class('toggle-slider');
+
+  // NOUVEAU : Épaisseur du tracé pour triangles
+  let labelEpaisseurTriangles = createP('Épaisseur tracé (px)');
+  labelEpaisseurTriangles.parent(conteneurCurseurTriangles);
+  labelEpaisseurTriangles.class('mini-label');
+
+  let curseurEpaisseurTriangles = createSlider(0.5, 10, 2, 0.5);
+  curseurEpaisseurTriangles.parent(conteneurCurseurTriangles);
+  curseurEpaisseurTriangles.input(() => {
+    epaisseurContourTriangles = curseurEpaisseurTriangles.value();
+    valeurEpaisseurTriangles.html(epaisseurContourTriangles.toFixed(1) + ' px');
+    necesiteRedessiner = true;
+  });
+
+  let valeurEpaisseurTriangles = createP(epaisseurContourTriangles.toFixed(1) + ' px');
+  valeurEpaisseurTriangles.parent(conteneurCurseurTriangles);
+  valeurEpaisseurTriangles.class('mini-valeur');
 
   // ===== CONTRÔLE 3 : DENSITÉ =====
   let etiquetteDensite = createP('Densité');
@@ -312,49 +490,7 @@ function setup() {
   valeurDensite.parent(panneauControle);
   valeurDensite.class('valeur');
 
-  // ===== CONTRÔLE 4 : OPACITÉ =====
-  let etiquetteOpacite = createP('Opacité');
-  etiquetteOpacite.parent(panneauControle);
-  etiquetteOpacite.class('label');
-
-  curseurOpacite = createSlider(0, 1, 1, 0.01);
-  curseurOpacite.parent(panneauControle);
-  curseurOpacite.input(() => {
-    opaciteForme = curseurOpacite.value();
-    valeurOpacite.html(opaciteForme.toFixed(2));
-    necesiteRedessiner = true;
-  });
-
-  valeurOpacite = createP(opaciteForme.toFixed(2));
-  valeurOpacite.parent(panneauControle);
-  valeurOpacite.class('valeur');
-
-  // ===== CONTRÔLE 5 : FORMES CREUSES =====
-  let caseFormesCreuses = createCheckbox(' Formes creuses (contour uniquement)', formesCreuses);
-  caseFormesCreuses.parent(panneauControle);
-  caseFormesCreuses.changed(() => {
-    formesCreuses = caseFormesCreuses.checked();
-    necesiteRedessiner = true;
-  });
-
-  // ===== CONTRÔLE 6 : ÉPAISSEUR DU CONTOUR =====
-  let etiquetteEpaisseur = createP('Épaisseur du contour (px)');
-  etiquetteEpaisseur.parent(panneauControle);
-  etiquetteEpaisseur.class('label');
-
-  curseurEpaisseur = createSlider(0, 20, epaisseurContour, 0.5);
-  curseurEpaisseur.parent(panneauControle);
-  curseurEpaisseur.input(() => {
-    epaisseurContour = curseurEpaisseur.value();
-    valeurEpaisseur.html(epaisseurContour.toFixed(1) + ' px');
-    necesiteRedessiner = true;
-  });
-
-  valeurEpaisseur = createP(epaisseurContour.toFixed(1) + ' px');
-  valeurEpaisseur.parent(panneauControle);
-  valeurEpaisseur.class('valeur');
-
-  // ===== CONTRÔLE 7 : PALETTE DE COULEURS =====
+  // ===== CONTRÔLE 4 : PALETTE DE COULEURS =====
   let etiquettePalette = createP('Palette de couleurs (HEX)');
   etiquettePalette.parent(panneauControle);
   etiquettePalette.class('label');
@@ -427,7 +563,6 @@ function setup() {
 
 // ============================================================================
 // FONCTION : toggleCurseur()
-// Description : Affiche/masque le curseur et anime le chevron
 // ============================================================================
 function toggleCurseur(conteneur, chevron) {
   if (conteneur.hasClass('ouvert')) {
@@ -450,17 +585,17 @@ function draw() {
 }
 
 // ============================================================================
-// FONCTION : genererNouveauMotifAleatoire() - COMPLÈTE ET CORRIGÉE
+// FONCTION : genererNouveauMotifAleatoire()
 // ============================================================================
 function genererNouveauMotifAleatoire() {
+  // Générer un nouveau seed AVANT d'appeler random()
+  seedMotif = floor(random(100000));
+
   // Randomiser les couleurs
   cyan = color(random(255), random(255), random(255));
   magenta = color(random(255), random(255), random(255));
   yellow = color(random(255), random(255), random(255));
   black = color(random(255), random(255), random(255));
-
-  // Générer un nouveau seed pour la composition
-  seedMotif = floor(random(100000));
 
   // Randomiser la disposition
   let dispositionsAleatoires = ['grille', 'aleatoire'];
@@ -481,18 +616,22 @@ function genererNouveauMotifAleatoire() {
   echelleTriangles = round(random(0.5, 3) * 10) / 10;
   if (curseurEchelleTriangles) curseurEchelleTriangles.value(echelleTriangles);
   
-  // Randomiser l'opacité
-  opaciteForme = round(random(0.3, 1) * 100) / 100;
-  if (curseurOpacite) curseurOpacite.value(opaciteForme);
-  if (valeurOpacite) valeurOpacite.html(opaciteForme.toFixed(2));
+  // MODIFIÉ : Randomiser les opacités individuelles
+  opaciteFormeCercles = round(random(0.3, 1) * 100) / 100;
+  opaciteFormeCarres = round(random(0.3, 1) * 100) / 100;
+  opaciteFormeTriangles = round(random(0.3, 1) * 100) / 100;
   
   // Randomiser les formes affichées
   afficherCercles = random() > 0.3;
   afficherCarres = random() > 0.3;
   afficherTriangles = random() > 0.3;
   
+  // S'assurer qu'au moins UNE forme est affichée
   if (!afficherCercles && !afficherCarres && !afficherTriangles) {
-    afficherCercles = true;
+    let formeAleatoire = floor(random(3));
+    if (formeAleatoire === 0) afficherCercles = true;
+    else if (formeAleatoire === 1) afficherCarres = true;
+    else afficherTriangles = true;
   }
   
   if (caseCercles) caseCercles.checked(afficherCercles);
@@ -504,7 +643,7 @@ function genererNouveauMotifAleatoire() {
   unifierCarres = random() > 0.7;
   unifierTriangles = random() > 0.7;
 
-  // Mettre à jour les toggle switches
+  // Mettre à jour les checkboxes d'unification
   let allCheckboxes = document.querySelectorAll('.toggle-switch input[type="checkbox"]');
   if (allCheckboxes.length >= 3) {
     allCheckboxes[0].checked = unifierCercles;
@@ -512,11 +651,22 @@ function genererNouveauMotifAleatoire() {
     allCheckboxes[2].checked = unifierTriangles;
   }
   
-  // Randomiser les formes creuses et l'épaisseur du contour
-  formesCreuses = random() > 0.7;
-  epaisseurContour = random() > 0.5 ? floor(random(1, 8)) : 0;
-  if (curseurEpaisseur) curseurEpaisseur.value(epaisseurContour);
-  if (valeurEpaisseur) valeurEpaisseur.html(epaisseurContour.toFixed(1) + ' px');
+  // Randomiser les formes creuses individuelles
+  formesCrecsesCercles = random() > 0.7;
+  formesCreusesCarres = random() > 0.7;
+  formesCreusesTriangles = random() > 0.7;
+
+  // Mettre à jour les checkboxes de formes creuses
+  if (allCheckboxes.length >= 6) {
+    allCheckboxes[3].checked = formesCrecsesCercles;
+    allCheckboxes[4].checked = formesCreusesCarres;
+    allCheckboxes[5].checked = formesCreusesTriangles;
+  }
+  
+  // NOUVEAU : Randomiser les épaisseurs
+  epaisseurContourCercles = round(random(0.5, 8) * 2) / 2;
+  epaisseurContourCarres = round(random(0.5, 8) * 2) / 2;
+  epaisseurContourTriangles = round(random(0.5, 8) * 2) / 2;
   
   melangerFormes = afficherCercles || afficherCarres || afficherTriangles;
   updateAllPaletteUI();
@@ -551,6 +701,13 @@ function genererNouveauMotif() {
 // FONCTION : dessinerCMYK()
 // ============================================================================
 function dessinerCMYK() {
+  // Vérifier qu'on a au moins une forme à afficher
+  melangerFormes = afficherCercles || afficherCarres || afficherTriangles;
+  if (!melangerFormes) {
+    afficherCercles = true;
+    melangerFormes = true;
+  }
+  
   // Utiliser le seed pour avoir les MÊMES positions de formes
   randomSeed(seedMotif);
   
@@ -611,10 +768,9 @@ function dessinerPointCMYK(X, Y, diff, spotamp) {
 }
 
 // ============================================================================
-// FONCTION : dessinerForme()
+// FONCTION : dessinerForme() - AVEC OPACITÉ PAR TYPE DE FORME (CORRIGÉ)
 // ============================================================================
 function dessinerForme(x, y, size, col, position) {
-  let a = opaciteForme * 255;
   let r = red(col), g = green(col), b = blue(col);
 
   let formesDisponibles = [];
@@ -622,23 +778,46 @@ function dessinerForme(x, y, size, col, position) {
   if (afficherCarres) formesDisponibles.push('carre');
   if (afficherTriangles) formesDisponibles.push('triangle');
 
-  let formeADessiner = 'cercle';
-  if (formesDisponibles.length > 0) {
-    formeADessiner = random(formesDisponibles);
+  // Si aucune forme n'est disponible, afficher au moins des cercles
+  if (formesDisponibles.length === 0) {
+    formesDisponibles.push('cercle');
   }
 
-  // Appliquer l'échelle individuelle selon le type de forme
+  let formeADessiner = random(formesDisponibles);
+
+  // CORRIGÉ : Appliquer l'opacité selon le TYPE DE FORME choisi
+  let opacite = 1;
   if (formeADessiner === 'cercle') {
+    opacite = opaciteFormeCercles;
     size = unifierCercles ? (20 * echelleCercles) : (size * echelleCercles);
   } else if (formeADessiner === 'carre') {
+    opacite = opaciteFormeCarres;
     size = unifierCarres ? (20 * echelleCarres) : (size * echelleCarres);
   } else if (formeADessiner === 'triangle') {
+    opacite = opaciteFormeTriangles;
     size = unifierTriangles ? (20 * echelleTriangles) : (size * echelleTriangles);
   }
 
+  let a = opacite * 255;
+
   push();
 
-  if (formesCreuses) {
+  // Déterminer si la forme doit être creuse selon son type
+  let estCreuse = false;
+  let epaisseurContour = 0;
+  
+  if (formeADessiner === 'cercle') {
+    estCreuse = formesCrecsesCercles;
+    epaisseurContour = epaisseurContourCercles;
+  } else if (formeADessiner === 'carre') {
+    estCreuse = formesCreusesCarres;
+    epaisseurContour = epaisseurContourCarres;
+  } else if (formeADessiner === 'triangle') {
+    estCreuse = formesCreusesTriangles;
+    epaisseurContour = epaisseurContourTriangles;
+  }
+
+  if (estCreuse) {
     if (epaisseurContour > 0) {
       stroke(r, g, b, a);
       strokeWeight(epaisseurContour);
@@ -666,6 +845,85 @@ function dessinerForme(x, y, size, col, position) {
   }
 
   pop();
+}
+
+// ============================================================================
+// FONCTION : dessinerFormeExport() - AVEC OPACITÉ PAR TYPE DE FORME (CORRIGÉ)
+// ============================================================================
+function dessinerFormeExport(pg, x, y, size, col, position) {
+  let r = red(col), g = green(col), b = blue(col);
+  
+  let formesDisponibles = [];
+  if (afficherCercles) formesDisponibles.push('cercle');
+  if (afficherCarres) formesDisponibles.push('carre');
+  if (afficherTriangles) formesDisponibles.push('triangle');
+  
+  if (formesDisponibles.length === 0) {
+    formesDisponibles.push('cercle');
+  }
+
+  let formeADessiner = random(formesDisponibles);
+
+  // CORRIGÉ : Appliquer l'opacité selon le TYPE DE FORME choisi
+  let opacite = 1;
+  if (formeADessiner === 'cercle') {
+    opacite = opaciteFormeCercles;
+    size = unifierCercles ? (20 * echelleCercles) : (size * echelleCercles);
+  } else if (formeADessiner === 'carre') {
+    opacite = opaciteFormeCarres;
+    size = unifierCarres ? (20 * echelleCarres) : (size * echelleCarres);
+  } else if (formeADessiner === 'triangle') {
+    opacite = opaciteFormeTriangles;
+    size = unifierTriangles ? (20 * echelleTriangles) : (size * echelleTriangles);
+  }
+
+  let a = opacite * 255;
+  
+  pg.push();
+  
+  // Déterminer si la forme doit être creuse selon son type
+  let estCreuse = false;
+  let epaisseurContour = 0;
+  
+  if (formeADessiner === 'cercle') {
+    estCreuse = formesCrecsesCercles;
+    epaisseurContour = epaisseurContourCercles;
+  } else if (formeADessiner === 'carre') {
+    estCreuse = formesCreusesCarres;
+    epaisseurContour = epaisseurContourCarres;
+  } else if (formeADessiner === 'triangle') {
+    estCreuse = formesCreusesTriangles;
+    epaisseurContour = epaisseurContourTriangles;
+  }
+
+  if (estCreuse) {
+    if (epaisseurContour > 0) {
+      pg.stroke(r, g, b, a);
+      pg.strokeWeight(epaisseurContour);
+    } else {
+      pg.noStroke();
+    }
+    pg.noFill();
+  } else {
+    pg.noStroke();
+    pg.fill(r, g, b, a);
+  }
+  
+  if (formeADessiner === 'cercle') {
+    pg.circle(x, y, size);
+  } else if (formeADessiner === 'carre') {
+    pg.rectMode(CENTER);
+    pg.square(x, y, size);
+  } else if (formeADessiner === 'triangle') {
+    let h = size * sqrt(3) / 2;
+    pg.triangle(
+      x, y - h / 2,
+      x - size / 2, y + h / 2,
+      x + size / 2, y + h / 2
+    );
+  }
+  
+  pg.pop();
 }
 
 // ============================================================================
@@ -812,59 +1070,5 @@ function dessinerPointCMYKExport(pg, source, X, Y, diff, spotamp) {
   dessinerFormeExport(pg, X - diff, Y, CMYKspotsize[0], cyan, 'cyan');
   dessinerFormeExport(pg, X, Y + diff, CMYKspotsize[1], magenta, 'magenta');
   dessinerFormeExport(pg, X + diff, Y, CMYKspotsize[2], yellow, 'jaune');
-}
-
-function dessinerFormeExport(pg, x, y, size, col, position) {
-  let a = opaciteForme * 255;
-  let r = red(col), g = green(col), b = blue(col);
-  
-  let formesDisponibles = [];
-  if (afficherCercles) formesDisponibles.push('cercle');
-  if (afficherCarres) formesDisponibles.push('carre');
-  if (afficherTriangles) formesDisponibles.push('triangle');
-  
-  let formeADessiner = 'cercle';
-  if (formesDisponibles.length > 0) {
-    formeADessiner = random(formesDisponibles);
-  }
-
-  if (formeADessiner === 'cercle') {
-    size = unifierCercles ? (20 * echelleCercles) : (size * echelleCercles);
-  } else if (formeADessiner === 'carre') {
-    size = unifierCarres ? (20 * echelleCarres) : (size * echelleCarres);
-  } else if (formeADessiner === 'triangle') {
-    size = unifierTriangles ? (20 * echelleTriangles) : (size * echelleTriangles);
-  }
-  
-  pg.push();
-  
-  if (formesCreuses) {
-    if (epaisseurContour > 0) {
-      pg.stroke(r, g, b, a);
-      pg.strokeWeight(epaisseurContour);
-    } else {
-      pg.noStroke();
-    }
-    pg.noFill();
-  } else {
-    pg.noStroke();
-    pg.fill(r, g, b, a);
-  }
-  
-  if (formeADessiner === 'cercle') {
-    pg.circle(x, y, size);
-  } else if (formeADessiner === 'carre') {
-    pg.rectMode(CENTER);
-    pg.square(x, y, size);
-  } else if (formeADessiner === 'triangle') {
-    let h = size * sqrt(3) / 2;
-    pg.triangle(
-      x, y - h / 2,
-      x - size / 2, y + h / 2,
-      x + size / 2, y + h / 2
-    );
-  }
-  
-  pg.pop();
 }
 
