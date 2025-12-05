@@ -1,8 +1,336 @@
+/* ============================================================================
+   GÉNÉRATEUR DE MOSAÏQUE — Styles
+   ============================================================================ */
+
+/* Reset de base */
 html, body {
   margin: 0;
   padding: 0;
+  overflow: hidden;
+  font-family: Arial, sans-serif;
 }
 
 canvas {
   display: block;
+}
+
+/* ============================================================================
+   PANNEAU DE RÉGLAGES
+   ============================================================================ */
+#panneauControle {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 280px;
+  height: 100vh;
+  background-color: #f2f2e7;
+  padding: 20px;
+  box-sizing: border-box;
+  overflow-y: auto;
+  border-left: 2px solid #ccc;
+  z-index: 1000;
+}
+
+/* Titre du panneau */
+#panneauControle .titre {
+  margin: 0 0 15px 0;
+  font-size: 18px;
+  font-weight: bold;
+  color: #1d1d1b;
+  text-align: center;
+}
+
+/* Labels des contrôles */
+#panneauControle .label {
+  margin: 10px 0 5px 0;
+  font-size: 12px;
+  color: #1d1d1b;
+  font-weight: bold;
+}
+
+/* Valeurs affichées sous les sliders */
+#panneauControle .valeur {
+  margin: 0 0 15px 0;
+  font-size: 12px;
+  color: #1d1d1b;
+}
+
+/* Select (dropdowns) */
+#panneauControle select {
+  width: 100%;
+  padding: 8px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  font-size: 13px;
+}
+
+/* Sliders */
+#panneauControle input[type="range"] {
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+/* Checkboxes */
+#panneauControle input[type="checkbox"] {
+  margin-bottom: 5px;
+  margin-right: 5px;
+}
+
+/* Conteneur de cases à cocher */
+.conteneur-cases {
+  margin-bottom: 15px;
+}
+
+.conteneur-cases label {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 12px;
+  color: #1d1d1b;
+}
+
+/* Nouveau : conteneur pour chaque forme avec son curseur */
+.forme-controle {
+  margin-bottom: 10px;
+  padding: 10px;
+  background-color: #e8e8dd;
+  border-radius: 4px;
+}
+
+.forme-controle-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 5px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.forme-controle-header:hover {
+  opacity: 0.8;
+}
+
+/* Icône chevron pour indiquer l'état ouvert/fermé */
+.chevron {
+  font-size: 10px;
+  transition: transform 0.2s ease;
+  color: #666;
+  margin-left: auto;
+}
+
+.chevron.ouvert {
+  transform: rotate(90deg);
+}
+
+/* Conteneur du curseur (peut être masqué) */
+.curseur-container {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+
+.curseur-container.ouvert {
+  max-height: 150px; /* Augmenté pour accueillir le toggle */
+}
+
+.forme-controle input[type="range"] {
+  width: 100%;
+  margin: 5px 0;
+}
+
+.forme-controle .mini-valeur {
+  font-size: 11px;
+  color: #555;
+  margin: 0;
+}
+
+/* Toggle switch pour unifier les tailles */
+.toggle-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #d0d0c5;
+}
+
+.toggle-label {
+  font-size: 11px;
+  color: #555;
+  flex: 1;
+}
+
+/* Style du toggle switch */
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 20px;
+}
+
+.toggle-switch input[type="checkbox"] {
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  margin: 0;
+  position: relative;
+  z-index: 2;
+}
+
+.toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.3s;
+  border-radius: 20px;
+  z-index: 1;
+}
+
+.toggle-slider:before {
+  position: absolute;
+  content: "";
+  height: 14px;
+  width: 14px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.3s;
+  border-radius: 50%;
+}
+
+.toggle-switch input:checked + .toggle-slider {
+  background-color: #4a7c59;
+}
+
+.toggle-switch input:checked + .toggle-slider:before {
+  transform: translateX(20px);
+}
+
+.toggle-slider:hover {
+  background-color: #bbb;
+}
+
+.toggle-switch input:checked + .toggle-slider:hover {
+  background-color: #5d9d6f;
+}
+
+/* Palette de couleurs — rangées */
+.palette-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+/* Preview de couleur (carré cliquable) */
+.color-preview {
+  width: 26px;
+  height: 20px;
+  border-radius: 4px;
+  border: 1px solid #999;
+  cursor: pointer;
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+/* Input hexadécimal */
+.palette-row input[type="text"] {
+  flex: 1;
+  padding: 6px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 12px;
+  font-family: monospace;
+}
+
+/* Input color picker (caché) */
+.palette-row input[type="color"] {
+  visibility: hidden;
+  width: 0;
+  height: 0;
+  position: absolute;
+}
+
+/* ============================================================================
+   BOUTONS
+   ============================================================================ */
+#panneauControle button {
+  width: 100%;
+  padding: 10px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  border: none;
+  font-size: 14px;
+  font-weight: bold;
+  margin-top: 10px;
+  transition: background-color 0.2s ease;
+}
+
+/* Bouton génération aléatoire */
+#panneauControle .btn-generer {
+  background-color: #1d1d1b;
+  color: #f2f2e7;
+}
+
+#panneauControle .btn-generer:hover {
+  background-color: #3a3a36;
+}
+
+#panneauControle .btn-generer:active {
+  background-color: #0d0d0b;
+}
+
+/* Bouton téléchargement */
+#panneauControle .btn-telecharger {
+  background-color: #4a7c59;
+  color: #f2f2e7;
+}
+
+#panneauControle .btn-telecharger:hover {
+  background-color: #5d9d6f;
+}
+
+#panneauControle .btn-telecharger:active {
+  background-color: #3a6247;
+}
+
+/* ============================================================================
+   SCROLLBAR PERSONNALISÉE (optionnel)
+   ============================================================================ */
+#panneauControle::-webkit-scrollbar {
+  width: 8px;
+}
+
+#panneauControle::-webkit-scrollbar-track {
+  background: #e0e0d8;
+  border-radius: 4px;
+}
+
+#panneauControle::-webkit-scrollbar-thumb {
+  background: #bbb;
+  border-radius: 4px;
+}
+
+#panneauControle::-webkit-scrollbar-thumb:hover {
+  background: #999;
+}
+
+/* ============================================================================
+   RESPONSIVITÉ
+   ============================================================================ */
+@media (max-width: 768px) {
+  #panneauControle {
+    width: 100%;
+    height: 50vh;
+    top: auto;
+    bottom: 0;
+    border-left: none;
+    border-top: 2px solid #ccc;
+  }
 }
