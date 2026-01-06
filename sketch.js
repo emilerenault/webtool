@@ -22,7 +22,7 @@ let chevronCercles, chevronCarres, chevronTriangles;
 let paletteInputs = [];
 let palettePreviews = [];
 let palettePickers = [];
-let largeurPanneau = 280;
+let largeurPanneau = 340;
 let densite = 20;
 let typeDisposition = 'grille';
 let echelleCercles = 1;
@@ -60,537 +60,425 @@ function setup() {
   panneauControle.id('panneauControle');
 
   // ===== TITRE DU PANNEAU =====
-  let titre = createP('Réglages');
+  let titre = createP('Générateur de mosaïque');
   titre.parent(panneauControle);
   titre.class('titre');
 
-  // ===== CONTRÔLE 1 : DISPOSITION =====
-  let etiquetteDisposition = createP('Disposition');
-  etiquetteDisposition.parent(panneauControle);
-  etiquetteDisposition.class('label');
+  // ===== SECTION 1 : DISPOSITION =====
+  let sectionDisposition = createDiv();
+  sectionDisposition.parent(panneauControle);
+  sectionDisposition.style('display', 'flex').style('flex-direction', 'column').style('gap', '12px');
 
-  selecteurDisposition = createSelect();
-  selecteurDisposition.parent(panneauControle);
-  selecteurDisposition.option('Grille', 'grille');
-  selecteurDisposition.option('Aléatoire', 'aleatoire');
-  selecteurDisposition.changed(() => {
-    typeDisposition = selecteurDisposition.value();
+  let labelDisposition = createP('Disposition');
+  labelDisposition.parent(sectionDisposition);
+  labelDisposition.class('section-heading');
+  labelDisposition.style('margin', '0');
+
+  let dispositionButtons = createDiv();
+  dispositionButtons.parent(sectionDisposition);
+  dispositionButtons.class('disposition-buttons');
+
+  let btnGrille = createButton('Grille');
+  btnGrille.parent(dispositionButtons);
+  btnGrille.class('disposition-btn active');
+  btnGrille.style('flex', '1');
+  btnGrille.mousePressed(() => {
+    typeDisposition = 'grille';
+    document.querySelectorAll('.disposition-btn').forEach(b => b.classList.remove('active'));
+    btnGrille.elt.classList.add('active');
     necesiteRedessiner = true;
   });
 
-  // ===== CONTRÔLE 2 : FORMES AVEC TAILLE INDIVIDUELLE =====
-  let etiquetteFormes = createP('Formes et tailles');
-  etiquetteFormes.parent(panneauControle);
-  etiquetteFormes.class('label');
-
-  // --- CERCLES ---
-  let conteneurCercles = createDiv();
-  conteneurCercles.parent(panneauControle);
-  conteneurCercles.class('forme-controle');
-
-  let headerCercles = createDiv();
-  headerCercles.parent(conteneurCercles);
-  headerCercles.class('forme-controle-header');
-
-  caseCercles = createCheckbox(' Cercles', true);
-  caseCercles.parent(headerCercles);
-  caseCercles.changed(() => {
-    afficherCercles = caseCercles.checked();
-    melangerFormes = afficherCercles || afficherCarres || afficherTriangles;
+  let btnAleatoire = createButton('Aléatoire');
+  btnAleatoire.parent(dispositionButtons);
+  btnAleatoire.class('disposition-btn');
+  btnAleatoire.style('flex', '1');
+  btnAleatoire.mousePressed(() => {
+    typeDisposition = 'aleatoire';
+    document.querySelectorAll('.disposition-btn').forEach(b => b.classList.remove('active'));
+    btnAleatoire.elt.classList.add('active');
     necesiteRedessiner = true;
   });
 
-  // MODIFIÉ : Empêcher la propagation de l'événement click sur la checkbox
-  caseCercles.elt.addEventListener('click', (e) => {
-    e.stopPropagation();
-  });
+  // ===== SECTION 2 : DENSITÉ =====
+  let sectionDensite = createDiv();
+  sectionDensite.parent(panneauControle);
+  sectionDensite.style('display', 'flex').style('flex-direction', 'column').style('gap', '12px');
+
+  let labelDensite = createP('Densité');
+  labelDensite.parent(sectionDensite);
+  labelDensite.class('section-heading');
+  labelDensite.style('margin', '0');
+
+  let densiteContainer = createDiv();
+  densiteContainer.parent(sectionDensite);
+  densiteContainer.class('slider-group');
+
+  // Slider inversé: 0-50 où 50 = beaucoup de formes, 0 = peu
+  // On stocke la valeur réelle de densité (5-50px) mais le slider va de 0 à 50 (%) 
+  curseurDensite = createSlider(0, 50, 50 - (densite - 5), 1);
+  curseurDensite.parent(densiteContainer);
+  curseurDensite.class('slider');
+  curseurDensite.style('flex', '1');
+
+  let valeurDensite = createDiv((curseurDensite.value()) + '%');
+  valeurDensite.parent(densiteContainer);
+  valeurDensite.class('slider-value');
 
-  // NOUVEAU : Conteneur pour le chevron (zone cliquable pour le toggle)
-  let chevronContainerCercles = createDiv();
-  chevronContainerCercles.parent(headerCercles);
-  chevronContainerCercles.class('chevron-container');
-
-  chevronCercles = createSpan('▶');
-  chevronCercles.parent(chevronContainerCercles);
-  chevronCercles.class('chevron');
-
-  // MODIFIÉ : Clic uniquement sur le conteneur du chevron
-  chevronContainerCercles.mousePressed(() => {
-    toggleCurseur(conteneurCurseurCercles, chevronCercles);
-  });
-
-  // SUPPRIMÉ : headerCercles.mousePressed()
-
-  conteneurCurseurCercles = createDiv();
-  conteneurCurseurCercles.parent(conteneurCercles);
-  conteneurCurseurCercles.class('curseur-container');
-
-  // Taille
-  curseurEchelleCercles = createSlider(0.5, 3, 1, 0.1);
-  curseurEchelleCercles.parent(conteneurCurseurCercles);
-  curseurEchelleCercles.input(() => {
-    echelleCercles = curseurEchelleCercles.value();
-    valeurEchelleCercles.html('Taille : ' + echelleCercles.toFixed(1));
-    necesiteRedessiner = true;
-  });
-
-  let valeurEchelleCercles = createP('Taille : ' + echelleCercles.toFixed(1));
-  valeurEchelleCercles.parent(conteneurCurseurCercles);
-  valeurEchelleCercles.class('mini-valeur');
-
-  // NOUVEAU : Opacité
-  let labelOpaciteCercles = createP('Opacité');
-  labelOpaciteCercles.parent(conteneurCurseurCercles);
-  labelOpaciteCercles.class('mini-label');
-
-  let curseurOpaciteCercles = createSlider(0, 1, 1, 0.01);
-  curseurOpaciteCercles.parent(conteneurCurseurCercles);
-  curseurOpaciteCercles.input(() => {
-    opaciteFormeCercles = curseurOpaciteCercles.value();
-    valeurOpaciteCercles.html(opaciteFormeCercles.toFixed(2));
-    necesiteRedessiner = true;
-  });
-
-  let valeurOpaciteCercles = createP(opaciteFormeCercles.toFixed(2));
-  valeurOpaciteCercles.parent(conteneurCurseurCercles);
-  valeurOpaciteCercles.class('mini-valeur');
-
-  // Toggle unification taille
-  let toggleContainerUnifierCercles = createDiv();
-  toggleContainerUnifierCercles.parent(conteneurCurseurCercles);
-  toggleContainerUnifierCercles.class('toggle-container');
-
-  let toggleLabelUnifierCercles = createSpan('Taille uniforme');
-  toggleLabelUnifierCercles.parent(toggleContainerUnifierCercles);
-  toggleLabelUnifierCercles.class('toggle-label');
-
-  let toggleSwitchUnifierCercles = createDiv();
-  toggleSwitchUnifierCercles.parent(toggleContainerUnifierCercles);
-  toggleSwitchUnifierCercles.class('toggle-switch');
-
-  let checkboxUnifierCercles = createInput();
-  checkboxUnifierCercles.attribute('type', 'checkbox');
-  checkboxUnifierCercles.parent(toggleSwitchUnifierCercles);
-  checkboxUnifierCercles.changed(() => {
-    unifierCercles = checkboxUnifierCercles.elt.checked;
-    necesiteRedessiner = true;
-  });
-
-  let sliderUnifierCercles = createSpan('');
-  sliderUnifierCercles.parent(toggleSwitchUnifierCercles);
-  sliderUnifierCercles.class('toggle-slider');
-
-  // Toggle formes creuses
-  let toggleContainerCreuxCercles = createDiv();
-  toggleContainerCreuxCercles.parent(conteneurCurseurCercles);
-  toggleContainerCreuxCercles.class('toggle-container');
-
-  let toggleLabelCreuxCercles = createSpan('Tracé uniquement');
-  toggleLabelCreuxCercles.parent(toggleContainerCreuxCercles);
-  toggleLabelCreuxCercles.class('toggle-label');
-
-  let toggleSwitchCreuxCercles = createDiv();
-  toggleSwitchCreuxCercles.parent(toggleContainerCreuxCercles);
-  toggleSwitchCreuxCercles.class('toggle-switch');
-
-  let checkboxCreuxCercles = createInput();
-  checkboxCreuxCercles.attribute('type', 'checkbox');
-  checkboxCreuxCercles.parent(toggleSwitchCreuxCercles);
-  checkboxCreuxCercles.changed(() => {
-    formesCrecsesCercles = checkboxCreuxCercles.elt.checked;
-    necesiteRedessiner = true;
-  });
-
-  let sliderCreuxCercles = createSpan('');
-  sliderCreuxCercles.parent(toggleSwitchCreuxCercles);
-  sliderCreuxCercles.class('toggle-slider');
-
-  // NOUVEAU : Épaisseur du tracé pour cercles
-  let labelEpaisseurCercles = createP('Épaisseur tracé (px)');
-  labelEpaisseurCercles.parent(conteneurCurseurCercles);
-  labelEpaisseurCercles.class('mini-label');
-
-  let curseurEpaisseurCercles = createSlider(0.5, 10, 2, 0.5);
-  curseurEpaisseurCercles.parent(conteneurCurseurCercles);
-  curseurEpaisseurCercles.input(() => {
-    epaisseurContourCercles = curseurEpaisseurCercles.value();
-    valeurEpaisseurCercles.html(epaisseurContourCercles.toFixed(1) + ' px');
-    necesiteRedessiner = true;
-  });
-
-  let valeurEpaisseurCercles = createP(epaisseurContourCercles.toFixed(1) + ' px');
-  valeurEpaisseurCercles.parent(conteneurCurseurCercles);
-  valeurEpaisseurCercles.class('mini-valeur');
-
-  // --- CARRÉS ---
-  let conteneurCarres = createDiv();
-  conteneurCarres.parent(panneauControle);
-  conteneurCarres.class('forme-controle');
-
-  let headerCarres = createDiv();
-  headerCarres.parent(conteneurCarres);
-  headerCarres.class('forme-controle-header');
-
-  caseCarres = createCheckbox(' Carrés', true);
-  caseCarres.parent(headerCarres);
-  caseCarres.changed(() => {
-    afficherCarres = caseCarres.checked();
-    melangerFormes = afficherCercles || afficherCarres || afficherTriangles;
-    necesiteRedessiner = true;
-  });
-
-  caseCarres.elt.addEventListener('click', (e) => {
-    e.stopPropagation();
-  });
-
-  // NOUVEAU : Conteneur pour le chevron
-  let chevronContainerCarres = createDiv();
-  chevronContainerCarres.parent(headerCarres);
-  chevronContainerCarres.class('chevron-container');
-
-  chevronCarres = createSpan('▶');
-  chevronCarres.parent(chevronContainerCarres);
-  chevronCarres.class('chevron');
-
-  chevronContainerCarres.mousePressed(() => {
-    toggleCurseur(conteneurCurseurCarres, chevronCarres);
-  });
-
-  conteneurCurseurCarres = createDiv();
-  conteneurCurseurCarres.parent(conteneurCarres);
-  conteneurCurseurCarres.class('curseur-container');
-
-  // Taille
-  curseurEchelleCarres = createSlider(0.5, 3, 1, 0.1);
-  curseurEchelleCarres.parent(conteneurCurseurCarres);
-  curseurEchelleCarres.input(() => {
-    echelleCarres = curseurEchelleCarres.value();
-    valeurEchelleCarres.html('Taille : ' + echelleCarres.toFixed(1));
-    necesiteRedessiner = true;
-  });
-
-  let valeurEchelleCarres = createP('Taille : ' + echelleCarres.toFixed(1));
-  valeurEchelleCarres.parent(conteneurCurseurCarres);
-  valeurEchelleCarres.class('mini-valeur');
-
-  // NOUVEAU : Opacité
-  let labelOpaciteCarres = createP('Opacité');
-  labelOpaciteCarres.parent(conteneurCurseurCarres);
-  labelOpaciteCarres.class('mini-label');
-
-  let curseurOpaciteCarres = createSlider(0, 1, 1, 0.01);
-  curseurOpaciteCarres.parent(conteneurCurseurCarres);
-  curseurOpaciteCarres.input(() => {
-    opaciteFormeCarres = curseurOpaciteCarres.value();
-    valeurOpaciteCarres.html(opaciteFormeCarres.toFixed(2));
-    necesiteRedessiner = true;
-  });
-
-  let valeurOpaciteCarres = createP(opaciteFormeCarres.toFixed(2));
-  valeurOpaciteCarres.parent(conteneurCurseurCarres);
-  valeurOpaciteCarres.class('mini-valeur');
-
-  // Toggle unification taille
-  let toggleContainerUnifierCarres = createDiv();
-  toggleContainerUnifierCarres.parent(conteneurCurseurCarres);
-  toggleContainerUnifierCarres.class('toggle-container');
-
-  let toggleLabelUnifierCarres = createSpan('Taille uniforme');
-  toggleLabelUnifierCarres.parent(toggleContainerUnifierCarres);
-  toggleLabelUnifierCarres.class('toggle-label');
-
-  let toggleSwitchUnifierCarres = createDiv();
-  toggleSwitchUnifierCarres.parent(toggleContainerUnifierCarres);
-  toggleSwitchUnifierCarres.class('toggle-switch');
-
-  let checkboxUnifierCarres = createInput();
-  checkboxUnifierCarres.attribute('type', 'checkbox');
-  checkboxUnifierCarres.parent(toggleSwitchUnifierCarres);
-  checkboxUnifierCarres.changed(() => {
-    unifierCarres = checkboxUnifierCarres.elt.checked;
-    necesiteRedessiner = true;
-  });
-
-  let sliderUnifierCarres = createSpan('');
-  sliderUnifierCarres.parent(toggleSwitchUnifierCarres);
-  sliderUnifierCarres.class('toggle-slider');
-
-  // Toggle formes creuses
-  let toggleContainerCreuxCarres = createDiv();
-  toggleContainerCreuxCarres.parent(conteneurCurseurCarres);
-  toggleContainerCreuxCarres.class('toggle-container');
-
-  let toggleLabelCreuxCarres = createSpan('Tracé uniquement');
-  toggleLabelCreuxCarres.parent(toggleContainerCreuxCarres);
-  toggleLabelCreuxCarres.class('toggle-label');
-
-  let toggleSwitchCreuxCarres = createDiv();
-  toggleSwitchCreuxCarres.parent(toggleContainerCreuxCarres);
-  toggleSwitchCreuxCarres.class('toggle-switch');
-
-  let checkboxCreuxCarres = createInput();
-  checkboxCreuxCarres.attribute('type', 'checkbox');
-  checkboxCreuxCarres.parent(toggleSwitchCreuxCarres);
-  checkboxCreuxCarres.changed(() => {
-    formesCreusesCarres = checkboxCreuxCarres.elt.checked;
-    necesiteRedessiner = true;
-  });
-
-  let sliderCreuxCarres = createSpan('');
-  sliderCreuxCarres.parent(toggleSwitchCreuxCarres);
-  sliderCreuxCarres.class('toggle-slider');
-
-  // NOUVEAU : Épaisseur du tracé pour carrés
-  let labelEpaisseurCarres = createP('Épaisseur tracé (px)');
-  labelEpaisseurCarres.parent(conteneurCurseurCarres);
-  labelEpaisseurCarres.class('mini-label');
-
-  let curseurEpaisseurCarres = createSlider(0.5, 10, 2, 0.5);
-  curseurEpaisseurCarres.parent(conteneurCurseurCarres);
-  curseurEpaisseurCarres.input(() => {
-    epaisseurContourCarres = curseurEpaisseurCarres.value();
-    valeurEpaisseurCarres.html(epaisseurContourCarres.toFixed(1) + ' px');
-    necesiteRedessiner = true;
-  });
-
-  let valeurEpaisseurCarres = createP(epaisseurContourCarres.toFixed(1) + ' px');
-  valeurEpaisseurCarres.parent(conteneurCurseurCarres);
-  valeurEpaisseurCarres.class('mini-valeur');
-
-  // --- TRIANGLES ---
-  let conteneurTriangles = createDiv();
-  conteneurTriangles.parent(panneauControle);
-  conteneurTriangles.class('forme-controle');
-
-  let headerTriangles = createDiv();
-  headerTriangles.parent(conteneurTriangles);
-  headerTriangles.class('forme-controle-header');
-
-  caseTriangles = createCheckbox(' Triangles', true);
-  caseTriangles.parent(headerTriangles);
-  caseTriangles.changed(() => {
-    afficherTriangles = caseTriangles.checked();
-    melangerFormes = afficherCercles || afficherCarres || afficherTriangles;
-    necesiteRedessiner = true;
-  });
-
-  caseTriangles.elt.addEventListener('click', (e) => {
-    e.stopPropagation();
-  });
-
-  // NOUVEAU : Conteneur pour le chevron
-  let chevronContainerTriangles = createDiv();
-  chevronContainerTriangles.parent(headerTriangles);
-  chevronContainerTriangles.class('chevron-container');
-
-  chevronTriangles = createSpan('▶');
-  chevronTriangles.parent(chevronContainerTriangles);
-  chevronTriangles.class('chevron');
-
-  chevronContainerTriangles.mousePressed(() => {
-    toggleCurseur(conteneurCurseurTriangles, chevronTriangles);
-  });
-
-  conteneurCurseurTriangles = createDiv();
-  conteneurCurseurTriangles.parent(conteneurTriangles);
-  conteneurCurseurTriangles.class('curseur-container');
-
-  // Taille
-  curseurEchelleTriangles = createSlider(0.5, 3, 1, 0.1);
-  curseurEchelleTriangles.parent(conteneurCurseurTriangles);
-  curseurEchelleTriangles.input(() => {
-    echelleTriangles = curseurEchelleTriangles.value();
-    valeurEchelleTriangles.html('Taille : ' + echelleTriangles.toFixed(1));
-    necesiteRedessiner = true;
-  });
-
-  let valeurEchelleTriangles = createP('Taille : ' + echelleTriangles.toFixed(1));
-  valeurEchelleTriangles.parent(conteneurCurseurTriangles);
-  valeurEchelleTriangles.class('mini-valeur');
-
-  // NOUVEAU : Opacité
-  let labelOpaciteTriangles = createP('Opacité');
-  labelOpaciteTriangles.parent(conteneurCurseurTriangles);
-  labelOpaciteTriangles.class('mini-label');
-
-  let curseurOpaciteTriangles = createSlider(0, 1, 1, 0.01);
-  curseurOpaciteTriangles.parent(conteneurCurseurTriangles);
-  curseurOpaciteTriangles.input(() => {
-    opaciteFormeTriangles = curseurOpaciteTriangles.value();
-    valeurOpaciteTriangles.html(opaciteFormeTriangles.toFixed(2));
-    necesiteRedessiner = true;
-  });
-
-  let valeurOpaciteTriangles = createP(opaciteFormeTriangles.toFixed(2));
-  valeurOpaciteTriangles.parent(conteneurCurseurTriangles);
-  valeurOpaciteTriangles.class('mini-valeur');
-
-  // Toggle unification taille
-  let toggleContainerUnifierTriangles = createDiv();
-  toggleContainerUnifierTriangles.parent(conteneurCurseurTriangles);
-  toggleContainerUnifierTriangles.class('toggle-container');
-
-  let toggleLabelUnifierTriangles = createSpan('Taille uniforme');
-  toggleLabelUnifierTriangles.parent(toggleContainerUnifierTriangles);
-  toggleLabelUnifierTriangles.class('toggle-label');
-
-  let toggleSwitchUnifierTriangles = createDiv();
-  toggleSwitchUnifierTriangles.parent(toggleContainerUnifierTriangles);
-  toggleSwitchUnifierTriangles.class('toggle-switch');
-
-  let checkboxUnifierTriangles = createInput();
-  checkboxUnifierTriangles.attribute('type', 'checkbox');
-  checkboxUnifierTriangles.parent(toggleSwitchUnifierTriangles);
-  checkboxUnifierTriangles.changed(() => {
-    unifierTriangles = checkboxUnifierTriangles.elt.checked;
-    necesiteRedessiner = true;
-  });
-
-  let sliderUnifierTriangles = createSpan('');
-  sliderUnifierTriangles.parent(toggleSwitchUnifierTriangles);
-  sliderUnifierTriangles.class('toggle-slider');
-
-  // Toggle formes creuses
-  let toggleContainerCreuxTriangles = createDiv();
-  toggleContainerCreuxTriangles.parent(conteneurCurseurTriangles);
-  toggleContainerCreuxTriangles.class('toggle-container');
-
-  let toggleLabelCreuxTriangles = createSpan('Tracé uniquement');
-  toggleLabelCreuxTriangles.parent(toggleContainerCreuxTriangles);
-  toggleLabelCreuxTriangles.class('toggle-label');
-
-  let toggleSwitchCreuxTriangles = createDiv();
-  toggleSwitchCreuxTriangles.parent(toggleContainerCreuxTriangles);
-  toggleSwitchCreuxTriangles.class('toggle-switch');
-
-  let checkboxCreuxTriangles = createInput();
-  checkboxCreuxTriangles.attribute('type', 'checkbox');
-  checkboxCreuxTriangles.parent(toggleSwitchCreuxTriangles);
-  checkboxCreuxTriangles.changed(() => {
-    formesCreusesTriangles = checkboxCreuxTriangles.elt.checked;
-    necesiteRedessiner = true;
-  });
-
-  let sliderCreuxTriangles = createSpan('');
-  sliderCreuxTriangles.parent(toggleSwitchCreuxTriangles);
-  sliderCreuxTriangles.class('toggle-slider');
-
-  // NOUVEAU : Épaisseur du tracé pour triangles
-  let labelEpaisseurTriangles = createP('Épaisseur tracé (px)');
-  labelEpaisseurTriangles.parent(conteneurCurseurTriangles);
-  labelEpaisseurTriangles.class('mini-label');
-
-  let curseurEpaisseurTriangles = createSlider(0.5, 10, 2, 0.5);
-  curseurEpaisseurTriangles.parent(conteneurCurseurTriangles);
-  curseurEpaisseurTriangles.input(() => {
-    epaisseurContourTriangles = curseurEpaisseurTriangles.value();
-    valeurEpaisseurTriangles.html(epaisseurContourTriangles.toFixed(1) + ' px');
-    necesiteRedessiner = true;
-  });
-
-  let valeurEpaisseurTriangles = createP(epaisseurContourTriangles.toFixed(1) + ' px');
-  valeurEpaisseurTriangles.parent(conteneurCurseurTriangles);
-  valeurEpaisseurTriangles.class('mini-valeur');
-
-  // ===== CONTRÔLE 3 : DENSITÉ =====
-  let etiquetteDensite = createP('Densité');
-  etiquetteDensite.parent(panneauControle);
-  etiquetteDensite.class('label');
-
-  curseurDensite = createSlider(5, 50, 20, 1);
-  curseurDensite.parent(panneauControle);
   curseurDensite.input(() => {
-    densite = curseurDensite.value();
-    valeurDensite.html(densite);
+    // Inverser: 100% - valeur pour que plus on va à droite, plus il y a de formes
+    let sliderValue = curseurDensite.value();
+    densite = 55 - sliderValue; // Convertir le pourcentage en espacement (5-50px)
+    valeurDensite.html(sliderValue + '%');
     necesiteRedessiner = true;
   });
 
-  let valeurDensite = createP(densite);
-  valeurDensite.parent(panneauControle);
-  valeurDensite.class('valeur');
+  // ===== SECTION 3 : FORMES =====
+  let sectionFormes = createDiv();
+  sectionFormes.parent(panneauControle);
+  sectionFormes.style('display', 'flex').style('flex-direction', 'column').style('gap', '0');
 
-  // ===== CONTRÔLE 4 : PALETTE DE COULEURS =====
-  let etiquettePalette = createP('Palette de couleurs (HEX)');
-  etiquettePalette.parent(panneauControle);
-  etiquettePalette.class('label');
+  let labelFormes = createP('Formes');
+  labelFormes.parent(sectionFormes);
+  labelFormes.class('section-heading');
+  labelFormes.style('margin', '0 0 12px 0');
 
-  if (!cyan) cyan = color('#00aacc');
-  if (!magenta) magenta = color('#cc0099');
-  if (!yellow) yellow = color('#ffd400');
-  if (!black) black = color('#222222');
+  // Grille de sélection des formes
+  let shapesGrid = createDiv();
+  shapesGrid.parent(sectionFormes);
+  shapesGrid.class('shapes-grid');
+
+  let shapeButtonsRefs = {};
+  const shapesConfig = {
+    cercle: { label: 'Cercle', iconActive: '●', iconInactive: '○' },
+    carre: { label: 'Carré', iconActive: '■', iconInactive: '□' },
+    triangle: { label: 'Triangle', iconActive: '▲', iconInactive: '△' }
+  };
+
+  let activeShape = 'cercle';
+
+  Object.entries(shapesConfig).forEach(([key, config]) => {
+    // Créer un élément button custom avec structure HTML personnalisée
+    let shapeBtn = createButton('');
+    shapeBtn.parent(shapesGrid);
+    shapeBtn.class('shape-btn');
+    shapeBtn.elt.classList.add(`shape-btn--${key}`);
+    if (key === 'cercle') shapeBtn.elt.classList.add('active-tab');
+    
+    // Déterminer l'icône initiale selon l'état d'affichage
+    let initialIcon = (key === 'cercle' ? afficherCercles : key === 'carre' ? afficherCarres : afficherTriangles) 
+      ? config.iconActive 
+      : config.iconInactive;
+    
+    // Créer la structure HTML interne du bouton
+    shapeBtn.elt.innerHTML = `
+      <div class="shape-icon">${initialIcon}</div>
+    `;
+    
+    let iconElement = shapeBtn.elt.querySelector('.shape-icon');
+    
+    // Clique sur l'icône : toggle la forme
+    iconElement.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (key === 'cercle') {
+        afficherCercles = !afficherCercles;
+      } else if (key === 'carre') {
+        afficherCarres = !afficherCarres;
+      } else if (key === 'triangle') {
+        afficherTriangles = !afficherTriangles;
+      }
+      
+      // Mettre à jour l'icône
+      let isActive = (key === 'cercle' ? afficherCercles : key === 'carre' ? afficherCarres : afficherTriangles);
+      iconElement.textContent = isActive ? config.iconActive : config.iconInactive;
+      
+      melangerFormes = afficherCercles || afficherCarres || afficherTriangles;
+      necesiteRedessiner = true;
+    });
+    
+    // Clique sur le reste du bouton : sélectionner la forme pour éditer
+    shapeBtn.elt.addEventListener('click', (e) => {
+      // Ne pas changer de tab si on clique sur l'icône (gestion du toggle)
+      if (e.target.closest('.shape-icon')) return;
+      
+      activeShape = key;
+      document.querySelectorAll('.shape-btn').forEach(btn => btn.classList.remove('active-tab'));
+      shapeBtn.elt.classList.add('active-tab');
+      necesiteRedessiner = true;
+      updateShapeSettings(key);
+    });
+
+    shapeButtonsRefs[key] = { btn: shapeBtn, icon: iconElement };
+  });
+
+  // Conteneur pour les réglages de la forme active
+  let shapeSettingsContainer = createDiv();
+  shapeSettingsContainer.parent(sectionFormes);
+  shapeSettingsContainer.id('shape-settings-container');
+  shapeSettingsContainer.class('shape-settings');
+
+  // Initialiser les réglages de la première forme
+  updateShapeSettings('cercle');
+
+  // Fonction interne pour mettre à jour les réglages des formes
+  function updateShapeSettings(shapeType) {
+    let panneauControle = document.getElementById('panneauControle');
+    let scrollPosition = panneauControle.scrollTop;
+    
+    let container = document.getElementById('shape-settings-container');
+    container.innerHTML = '';
+
+    let header = createDiv();
+    header.parent(container);
+    header.class('shape-settings-header');
+    let iconSpan = createSpan('Réglages ' + shapesConfig[shapeType].label.toLowerCase());
+    iconSpan.parent(header.elt);
+
+    // STYLE
+    let styleGroup = createDiv();
+    styleGroup.parent(container);
+    styleGroup.class('settings-group style-group');
+    let styleLabel = createP('Style');
+    styleLabel.parent(styleGroup.elt);
+    styleLabel.style('margin', '0').style('font-size', '14px').style('font-weight', '500').style('color', '#374151');
+
+    let styleButtonGroup = createDiv();
+    styleButtonGroup.parent(styleGroup.elt);
+    styleButtonGroup.class('button-group');
+
+    let isFill = (shapeType === 'cercle' && !formesCrecsesCercles) ||
+                 (shapeType === 'carre' && !formesCreusesCarres) ||
+                 (shapeType === 'triangle' && !formesCreusesTriangles);
+
+    let btnFill = createButton('Remplissage');
+    btnFill.parent(styleButtonGroup.elt);
+    if (isFill) btnFill.elt.classList.add('active');
+    btnFill.mousePressed(() => {
+      if (shapeType === 'cercle') formesCrecsesCercles = false;
+      else if (shapeType === 'carre') formesCreusesCarres = false;
+      else if (shapeType === 'triangle') formesCreusesTriangles = false;
+      document.querySelectorAll('#shape-settings-container .button-group button').forEach(b => b.classList.remove('active'));
+      updateShapeSettings(shapeType);
+      necesiteRedessiner = true;
+    });
+
+    let btnStroke = createButton('Tracé');
+    btnStroke.parent(styleButtonGroup.elt);
+    if (!isFill) btnStroke.elt.classList.add('active');
+    btnStroke.mousePressed(() => {
+      if (shapeType === 'cercle') formesCrecsesCercles = true;
+      else if (shapeType === 'carre') formesCreusesCarres = true;
+      else if (shapeType === 'triangle') formesCreusesTriangles = true;
+      // Déclencher la mise à jour après un petit délai pour voir l'animation
+      setTimeout(() => updateShapeSettings(shapeType), 10);
+      necesiteRedessiner = true;
+    });
+
+    // ÉPAISSEUR DU TRACÉ (si applicable - juste après le style)
+    let thicknessGroup = createDiv();
+    thicknessGroup.parent(container);
+    thicknessGroup.class('settings-group thickness-group');
+    if (isFill === false) {
+      thicknessGroup.elt.classList.add('show');
+    }
+    let thicknessLabel = createP('Épaisseur tracé');
+    thicknessLabel.parent(thicknessGroup.elt);
+    thicknessLabel.style('margin', '0').style('font-size', '14px').style('font-weight', '500').style('color', '#374151');
+
+    let thicknessSliderGroup = createDiv();
+    thicknessSliderGroup.parent(thicknessGroup.elt);
+    thicknessSliderGroup.class('slider-group');
+
+    let currentThickness = shapeType === 'cercle' ? epaisseurContourCercles : (shapeType === 'carre' ? epaisseurContourCarres : epaisseurContourTriangles);
+    let thicknessSlider = createSlider(0.5, 10, currentThickness, 0.5);
+    thicknessSlider.parent(thicknessSliderGroup.elt);
+    thicknessSlider.class('slider');
+    thicknessSlider.style('flex', '1');
+
+    let thicknessValue = createDiv(currentThickness.toFixed(1) + 'px');
+    thicknessValue.parent(thicknessSliderGroup.elt);
+    thicknessValue.class('slider-value');
+
+    thicknessSlider.input(() => {
+      let val = thicknessSlider.value();
+      thicknessValue.html(val.toFixed(1) + 'px');
+      if (shapeType === 'cercle') epaisseurContourCercles = val;
+      else if (shapeType === 'carre') epaisseurContourCarres = val;
+      else if (shapeType === 'triangle') epaisseurContourTriangles = val;
+      necesiteRedessiner = true;
+    });
+
+    // Restaurer la position du scroll avec requestAnimationFrame pour attendre le rendu du DOM
+    requestAnimationFrame(() => {
+      panneauControle.scrollTop = scrollPosition;
+    });
+
+    // TAILLE
+    let sizeGroup = createDiv();
+    sizeGroup.parent(container);
+    sizeGroup.class('settings-group');
+    let sizeLabel = createP('Taille');
+    sizeLabel.parent(sizeGroup.elt);
+    sizeLabel.style('margin', '0').style('font-size', '14px').style('font-weight', '500').style('color', '#374151');
+
+    let sizeButtonGroup = createDiv();
+    sizeButtonGroup.parent(sizeGroup.elt);
+    sizeButtonGroup.class('button-group');
+
+    let isUniform = (shapeType === 'cercle' && unifierCercles) ||
+                    (shapeType === 'carre' && unifierCarres) ||
+                    (shapeType === 'triangle' && unifierTriangles);
+
+    let btnUniform = createButton('Uniforme');
+    btnUniform.parent(sizeButtonGroup.elt);
+    if (isUniform) btnUniform.elt.classList.add('active');
+    btnUniform.mousePressed(() => {
+      if (shapeType === 'cercle') unifierCercles = true;
+      else if (shapeType === 'carre') unifierCarres = true;
+      else if (shapeType === 'triangle') unifierTriangles = true;
+      updateShapeSettings(shapeType);
+      necesiteRedessiner = true;
+    });
+
+    let btnRandom = createButton('Aléatoire');
+    btnRandom.parent(sizeButtonGroup.elt);
+    if (!isUniform) btnRandom.elt.classList.add('active');
+    btnRandom.mousePressed(() => {
+      if (shapeType === 'cercle') unifierCercles = false;
+      else if (shapeType === 'carre') unifierCarres = false;
+      else if (shapeType === 'triangle') unifierTriangles = false;
+      updateShapeSettings(shapeType);
+      necesiteRedessiner = true;
+    });
+
+    // Slider de taille
+    let sizeSliderGroup = createDiv();
+    sizeSliderGroup.parent(sizeGroup.elt);
+    sizeSliderGroup.class('slider-group');
+
+    let currentSize = shapeType === 'cercle' ? echelleCercles : (shapeType === 'carre' ? echelleCarres : echelleTriangles);
+    let sizeSlider = createSlider(0.5, 3, currentSize, 0.1);
+    sizeSlider.parent(sizeSliderGroup.elt);
+    sizeSlider.class('slider');
+    sizeSlider.style('flex', '1');
+
+    let sizeValue = createDiv(currentSize.toFixed(1) + 'x');
+    sizeValue.parent(sizeSliderGroup.elt);
+    sizeValue.class('slider-value');
+
+    sizeSlider.input(() => {
+      let val = sizeSlider.value();
+      sizeValue.html(val.toFixed(1) + 'x');
+      if (shapeType === 'cercle') echelleCercles = val;
+      else if (shapeType === 'carre') echelleCarres = val;
+      else if (shapeType === 'triangle') echelleTriangles = val;
+      necesiteRedessiner = true;
+    });
+
+    // TRANSPARENCE
+    let alphaGroup = createDiv();
+    alphaGroup.parent(container);
+    alphaGroup.class('settings-group');
+    let alphaLabel = createP('Transparence');
+    alphaLabel.parent(alphaGroup.elt);
+    alphaLabel.style('margin', '0').style('font-size', '14px').style('font-weight', '500').style('color', '#374151');
+
+    let alphaSliderGroup = createDiv();
+    alphaSliderGroup.parent(alphaGroup.elt);
+    alphaSliderGroup.class('slider-group');
+
+    let currentAlpha = shapeType === 'cercle' ? opaciteFormeCercles : (shapeType === 'carre' ? opaciteFormeCarres : opaciteFormeTriangles);
+    let alphaSlider = createSlider(0, 1, currentAlpha, 0.01);
+    alphaSlider.parent(alphaSliderGroup.elt);
+    alphaSlider.class('slider');
+    alphaSlider.style('flex', '1');
+
+    let alphaValue = createDiv(floor(currentAlpha * 100) + '%');
+    alphaValue.parent(alphaSliderGroup.elt);
+    alphaValue.class('slider-value');
+
+    alphaSlider.input(() => {
+      let val = alphaSlider.value();
+      alphaValue.html(floor(val * 100) + '%');
+      if (shapeType === 'cercle') opaciteFormeCercles = val;
+      else if (shapeType === 'carre') opaciteFormeCarres = val;
+      else if (shapeType === 'triangle') opaciteFormeTriangles = val;
+      necesiteRedessiner = true;
+    });
+  }
+
+  // ===== SECTION 4 : COULEURS =====
+  let sectionCouleurs = createDiv();
+  sectionCouleurs.parent(panneauControle);
+  sectionCouleurs.style('display', 'flex').style('flex-direction', 'column').style('gap', '12px');
+
+  let labelCouleurs = createP('Couleurs');
+  labelCouleurs.parent(sectionCouleurs);
+  labelCouleurs.class('section-heading');
+  labelCouleurs.style('margin', '0');
+
+  if (!cyan) cyan = color('#0088aa');
+  if (!magenta) magenta = color('#cc0088');
+  if (!yellow) yellow = color('#ffcc00');
+  if (!black) black = color('#333333');
 
   const couleursInit = [cyan, magenta, yellow, black];
+  let colorsContainer = createDiv();
+  colorsContainer.parent(sectionCouleurs);
+  colorsContainer.class('colors-section');
 
   for (let i = 0; i < 4; i++) {
-    let row = createDiv();
-    row.parent(panneauControle);
-    row.class('palette-row');
+    let colorRow = createDiv();
+    colorRow.parent(colorsContainer.elt);
+    colorRow.class('color-row');
 
-    let prev = createDiv();
-    prev.parent(row);
-    prev.class('color-preview');
-    prev.mousePressed(() => {
-      palettePickers[i].elt.click();
-    });
-    palettePreviews.push(prev);
+    let pickerWrapper = createDiv();
+    pickerWrapper.parent(colorRow.elt);
+    pickerWrapper.class('color-picker-wrapper');
 
     let hexVal = rgbToHex(couleursInit[i]);
+    
+    let picker = createInput(hexVal, 'color');
+    picker.parent(pickerWrapper.elt);
+    picker.input(() => {
+      let v = picker.value();
+      inp.value(v);
+      setPaletteColor(i, v);
+      updatePreview(i);
+      necesiteRedessiner = true;
+    });
+    palettePickers.push(picker);
+
     let inp = createInput(hexVal);
-    inp.parent(row);
+    inp.parent(colorRow.elt);
     inp.attribute('type', 'text');
     inp.attribute('maxlength', '7');
+    inp.class('color-hex');
     inp.input(() => {
       let v = normalizeHex(inp.value());
       if (v) {
+        picker.value(v);
         setPaletteColor(i, v);
         updatePreview(i);
         necesiteRedessiner = true;
       }
     });
     paletteInputs.push(inp);
-
-    let picker = createInput(hexVal, 'color');
-    picker.parent(row);
-    picker.input(() => {
-      let v = picker.value();
-      paletteInputs[i].value(v);
-      setPaletteColor(i, v);
-      updatePreview(i);
-      necesiteRedessiner = true;
-    });
-    palettePickers.push(picker);
   }
 
   updateAllPreviews();
 
-  // ===== BOUTON : GÉNÉRATION ALÉATOIRE =====
-  let boutonGeneration = createButton('Générer aléatoirement');
-  boutonGeneration.parent(panneauControle);
-  boutonGeneration.class('btn-generer');
-  boutonGeneration.mousePressed(() => {
-    genererNouveauMotifAleatoire();
-  });
+  // ===== SECTION BOUTONS =====
+  let sectionBoutons = createDiv();
+  sectionBoutons.parent(panneauControle);
+  sectionBoutons.class('button-group-section');
 
-  // ===== BOUTON : TÉLÉCHARGEMENT PNG =====
-  let boutonTelecharger = createButton('Télécharger (PNG 1920×1080)');
-  boutonTelecharger.parent(panneauControle);
-  boutonTelecharger.class('btn-telecharger');
-  boutonTelecharger.mousePressed(() => {
+  let btnDownload = createButton('⬇ Télécharger PNG');
+  btnDownload.parent(sectionBoutons);
+  btnDownload.class('btn-telecharger');
+  btnDownload.mousePressed(() => {
     telechargerPNG();
   });
-}
-
-// ============================================================================
-// FONCTION : toggleCurseur()
-// ============================================================================
-function toggleCurseur(conteneur, chevron) {
-  if (conteneur.hasClass('ouvert')) {
-    conteneur.removeClass('ouvert');
-    chevron.removeClass('ouvert');
-  } else {
-    conteneur.addClass('ouvert');
-    chevron.addClass('ouvert');
-  }
 }
 
 // ============================================================================
@@ -601,97 +489,6 @@ function draw() {
     dessinerCMYK();
     necesiteRedessiner = false;
   }
-}
-
-// ============================================================================
-// FONCTION : genererNouveauMotifAleatoire()
-// ============================================================================
-function genererNouveauMotifAleatoire() {
-  // Générer un nouveau seed AVANT d'appeler random()
-  seedMotif = floor(random(100000));
-
-  // Randomiser les couleurs
-  cyan = color(random(255), random(255), random(255));
-  magenta = color(random(255), random(255), random(255));
-  yellow = color(random(255), random(255), random(255));
-  black = color(random(255), random(255), random(255));
-
-  // Randomiser la disposition
-  let dispositionsAleatoires = ['grille', 'aleatoire'];
-  typeDisposition = random(dispositionsAleatoires);
-  if (selecteurDisposition) selecteurDisposition.value(typeDisposition);
-  
-  // Randomiser la densité
-  densite = floor(random(5, 51));
-  if (curseurDensite) curseurDensite.value(densite);
-  
-  // Randomiser les échelles individuelles
-  echelleCercles = round(random(0.5, 3) * 10) / 10;
-  if (curseurEchelleCercles) curseurEchelleCercles.value(echelleCercles);
-  
-  echelleCarres = round(random(0.5, 3) * 10) / 10;
-  if (curseurEchelleCarres) curseurEchelleCarres.value(echelleCarres);
-  
-  echelleTriangles = round(random(0.5, 3) * 10) / 10;
-  if (curseurEchelleTriangles) curseurEchelleTriangles.value(echelleTriangles);
-  
-  // MODIFIÉ : Randomiser les opacités individuelles
-  opaciteFormeCercles = round(random(0.3, 1) * 100) / 100;
-  opaciteFormeCarres = round(random(0.3, 1) * 100) / 100;
-  opaciteFormeTriangles = round(random(0.3, 1) * 100) / 100;
-  
-  // Randomiser les formes affichées
-  afficherCercles = random() > 0.3;
-  afficherCarres = random() > 0.3;
-  afficherTriangles = random() > 0.3;
-  
-  // S'assurer qu'au moins UNE forme est affichée
-  if (!afficherCercles && !afficherCarres && !afficherTriangles) {
-    let formeAleatoire = floor(random(3));
-    if (formeAleatoire === 0) afficherCercles = true;
-    else if (formeAleatoire === 1) afficherCarres = true;
-    else afficherTriangles = true;
-  }
-  
-  if (caseCercles) caseCercles.checked(afficherCercles);
-  if (caseCarres) caseCarres.checked(afficherCarres);
-  if (caseTriangles) caseTriangles.checked(afficherTriangles);
-  
-  // Randomiser les états d'unification taille
-  unifierCercles = random() > 0.7;
-  unifierCarres = random() > 0.7;
-  unifierTriangles = random() > 0.7;
-
-  // Mettre à jour les checkboxes d'unification
-  let allCheckboxes = document.querySelectorAll('.toggle-switch input[type="checkbox"]');
-  if (allCheckboxes.length >= 3) {
-    allCheckboxes[0].checked = unifierCercles;
-    allCheckboxes[1].checked = unifierCarres;
-    allCheckboxes[2].checked = unifierTriangles;
-  }
-  
-  // Randomiser les formes creuses individuelles
-  formesCrecsesCercles = random() > 0.7;
-  formesCreusesCarres = random() > 0.7;
-  formesCreusesTriangles = random() > 0.7;
-
-  // Mettre à jour les checkboxes de formes creuses
-  if (allCheckboxes.length >= 6) {
-    allCheckboxes[3].checked = formesCrecsesCercles;
-    allCheckboxes[4].checked = formesCreusesCarres;
-    allCheckboxes[5].checked = formesCreusesTriangles;
-  }
-  
-  // NOUVEAU : Randomiser les épaisseurs
-  epaisseurContourCercles = round(random(0.5, 8) * 2) / 2;
-  epaisseurContourCarres = round(random(0.5, 8) * 2) / 2;
-  epaisseurContourTriangles = round(random(0.5, 8) * 2) / 2;
-  
-  melangerFormes = afficherCercles || afficherCarres || afficherTriangles;
-  updateAllPaletteUI();
-  
-  // Régénérer la composition avec le nouveau seed
-  genererNouveauMotif();
 }
 
 // ============================================================================
@@ -731,7 +528,10 @@ function dessinerCMYK() {
   randomSeed(seedMotif);
   
   blendMode(BLEND);
-  background(230, 230, 230);
+  
+  // Appliquer le fond blanc
+  background(255, 255, 255);
+  
   noStroke();
   colorMode(RGB);
 
@@ -780,7 +580,7 @@ function dessinerPointCMYK(X, Y, diff, spotamp) {
   let thisCMYK = convertirRGBenCMYK(thisRGB[0], thisRGB[1], thisRGB[2]);
   let CMYKspotsize = convertirCMYKenTaillePoint(...thisCMYK, spotamp);
   
-  dessinerForme(X, Y - diff, CMYKspotsize[3], black, 'noir');
+  dessinerForme(X, Y - diff, CMYKspotsize[3] * 0.65, black, 'noir');
   dessinerForme(X - diff, Y, CMYKspotsize[0], cyan, 'cyan');
   dessinerForme(X, Y + diff, CMYKspotsize[1], magenta, 'magenta');
   dessinerForme(X + diff, Y, CMYKspotsize[2], yellow, 'jaune');
@@ -1050,7 +850,7 @@ function telechargerPNG() {
   }
   
   exportGraphics.blendMode(BLEND);
-  exportGraphics.background(230, 230, 230);
+  exportGraphics.background(255, 255, 255);
   exportGraphics.noStroke();
   exportGraphics.colorMode(RGB);
   
@@ -1085,7 +885,7 @@ function dessinerPointCMYKExport(pg, source, X, Y, diff, spotamp) {
   let thisCMYK = convertirRGBenCMYK(thisRGB[0], thisRGB[1], thisRGB[2]);
   let CMYKspotsize = convertirCMYKenTaillePoint(...thisCMYK, spotamp);
   
-  dessinerFormeExport(pg, X, Y - diff, CMYKspotsize[3], black, 'noir');
+  dessinerFormeExport(pg, X, Y - diff, CMYKspotsize[3] * 0.65, black, 'noir');
   dessinerFormeExport(pg, X - diff, Y, CMYKspotsize[0], cyan, 'cyan');
   dessinerFormeExport(pg, X, Y + diff, CMYKspotsize[1], magenta, 'magenta');
   dessinerFormeExport(pg, X + diff, Y, CMYKspotsize[2], yellow, 'jaune');
