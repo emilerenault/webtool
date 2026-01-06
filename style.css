@@ -7,13 +7,13 @@ html, body {
   margin: 0;
   padding: 0;
   overflow: hidden;
-  font-family: 'Roboto Mono', monospace;
+  font-family: 'Fredoka', sans-serif;
   background: #ffffff;
   color: #1f2937;
 }
 
 html, body, p, label, span, input, select, button, div {
-  font-family: 'Roboto Mono', monospace !important;
+  font-family: 'Fredoka', sans-serif !important;
 }
 
 canvas {
@@ -198,7 +198,7 @@ canvas {
   gap: 8px;
   padding: 12px 8px;
   border: none;
-  border-radius: 6px;
+  border-radius: 2px;
   background-color: transparent;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -278,6 +278,19 @@ canvas {
 
 .shape-btn--cercle .shape-icon {
   font-size: 40px;
+}
+
+.shape-btn--carre .shape-icon {
+  font-size: 48px;
+}
+
+.shape-btn--triangle .shape-icon {
+  font-size: 24px;
+  transform: translateY(2px);
+}
+
+.shape-btn--triangle .shape-icon:hover {
+  transform: translateY(2px) scale(1.1);
 }
 
 .shape-label {
@@ -382,7 +395,7 @@ canvas {
   font-size: 12px;
   font-weight: 300;
   border: none;
-  border-radius: 6px;
+  border-radius: 4px;
   background: transparent;
   cursor: pointer;
   transition: all 0.2s ease;
