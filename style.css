@@ -29,7 +29,7 @@ canvas {
   right: 0;
   width: 340px;
   height: 100vh;
-  background-color: #ffffff;
+  background-color: #f3f4f6;
   padding: 24px;
   box-sizing: border-box;
   overflow-y: auto;
@@ -118,7 +118,7 @@ canvas {
 
 #panneauControle select:hover {
   border-color: #9ca3af;
-  background-color: #f9fafb;
+  background-color: #ffffff;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
@@ -193,8 +193,8 @@ canvas {
   align-items: center;
   gap: 8px;
   padding: 12px 8px;
-  border: 2px solid #e5e7eb;
-  background: #ffffff;
+  border: 2px solid #d1d5db;
+  background-color: #f3f4f6;
   cursor: pointer;
   transition: all 0.2s ease;
   font-size: 12px;
@@ -209,8 +209,7 @@ canvas {
 
 .disposition-btn.active {
   border-color: #111827;
-  background-color: #f3f4f6;
-
+  background-color: #ffffff;
 }
 
 /* Shape tabs/onglets */
@@ -220,6 +219,7 @@ canvas {
   gap: 4px;
   overflow: hidden;
   border-radius: 8px 8px 0 0;
+  background-color: #f3f4f6;
 }
 
 .shape-btn {
@@ -232,14 +232,14 @@ canvas {
   flex: 1;
   border: none !important;
   border-radius: 8px 8px 0 0 !important;
-  background: #ffffff;
+  background: #f3f4f6;
   cursor: pointer;
   transition: all 0.2s;
   font-size: 12px;
   font-weight: 300;
   justify-content: center;
   overflow: visible;
-  opacity: 0.5;
+  opacity: 0.6;
 }
 
 .shape-btn:hover {
@@ -251,9 +251,10 @@ canvas {
 }
 
 .shape-btn.active-tab {
-  background-color: #f3f4f6;
+  background-color: #ffffff;
   opacity: 1;
   margin-bottom: 0;
+  border-bottom: 2px solid #111827;
 }
 
 .shape-icon {
@@ -294,7 +295,7 @@ canvas {
 
 /* Shape settings container */
 .shape-settings {
-  background-color: #f3f4f6;
+  background-color: #ffffff;
   border-radius: 0 0 8px 8px;
   padding: 20px;
   display: flex;
@@ -371,7 +372,7 @@ canvas {
   font-weight: 300;
   border: 2px solid #e5e7eb;
   border-radius: 6px;
-  background: transparent;
+  background: #ffffff;
   cursor: pointer;
   transition: all 0.2s ease;
 }
@@ -383,8 +384,9 @@ canvas {
 }
 
 .button-group button.active {
-  border-color: #111827;
-  background-color: #ffffff;
+  border-color: #d1d5db;
+  background-color: #f3f4f6;
+  font-weight: 500;
 }
 
 .slider-group {
@@ -403,7 +405,7 @@ canvas {
   font-size: 12px;
   font-weight: 400;
   color: #374151;
-  background-color: #f3f4f6;
+  background-color: #ffffff;
   padding: 4px 8px;
   border-radius: 4px;
   flex-shrink: 0;
@@ -468,7 +470,7 @@ input[type="color"]::-moz-color-swatch {
   font-family: 'Courier New', monospace;
   border: 1px solid #d1d5db;
   border-radius: 6px;
-  background: #f9fafb;
+  background: #ffffff;
   transition: all 0.2s ease;
   cursor: text;
 }
@@ -512,13 +514,13 @@ input[type="color"]::-moz-color-swatch {
 
 /* Bouton téléchargement */
 #panneauControle .btn-telecharger {
-  background-color: #bc7cdc;
+  background-color: #69676a;
   color: #ffffff;
   border: none;
 }
 
 #panneauControle .btn-telecharger:hover {
-  background-color: #bc7cdccf;
+  background-color: #2d2c2ecf;
   box-shadow: 0 4px 12px rgba(188, 124, 220, 0.3);
 }
 
