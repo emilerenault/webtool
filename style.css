@@ -180,10 +180,14 @@ canvas {
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
-/* Disposition buttons */
+/* Disposition buttons - Toggle switch style (couleurs inversées) */
 .disposition-buttons {
   display: flex;
-  gap: 8px;
+  gap: 0;
+  background-color: #ffffff;
+  padding: 6px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
 }
 
 .disposition-btn {
@@ -193,23 +197,25 @@ canvas {
   align-items: center;
   gap: 8px;
   padding: 12px 8px;
-  border: 2px solid #d1d5db;
-  background-color: #f3f4f6;
+  border: none;
+  border-radius: 6px;
+  background-color: transparent;
   cursor: pointer;
   transition: all 0.2s ease;
   font-size: 12px;
   font-weight: 200;
+  color: #6b7280;
 }
 
 .disposition-btn:hover {
-  border-color: #d1d5db;
-  background-color: #f9fafb;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  background-color: rgba(243, 244, 246, 0.4);
 }
 
 .disposition-btn.active {
-  border-color: #111827;
-  background-color: #ffffff;
+  background-color: #f3f4f6;
+  font-weight: 400;
+  color: #111827;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 /* Shape tabs/onglets */
@@ -300,7 +306,7 @@ canvas {
   padding: 20px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 16px;
 }
 
 .shape-settings-header {
@@ -317,8 +323,8 @@ canvas {
 .settings-group {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding-bottom: 12px;
+  gap: 6px;
+  padding-bottom: 16px;
   border-bottom: 1px solid #e5e7eb;
 }
 
@@ -328,7 +334,7 @@ canvas {
 }
 
 .settings-group h3 {
-  margin: 0;
+  margin: 0 0 6px 0;
   font-size: 12px;
   font-weight: 300;
   color: #374151;
@@ -339,7 +345,8 @@ canvas {
   opacity: 0.4;
   pointer-events: none;
   transition: opacity 0.3s ease;
-  padding-bottom: 12px;
+  padding-bottom: 0;
+  padding-top: 6px;
   border-bottom: none;
   position: relative;
 }
@@ -351,18 +358,22 @@ canvas {
 
 .thickness-group + .settings-group {
   border-top: 1px solid #e5e7eb;
-  border-bottom: 1px solid #e5e7eb;
-  padding-top: 12px;
-  margin-top: 12px;
+  padding-top: 16px;
+  margin-top: 0;
 }
 
 .settings-group.style-group {
   border-bottom: none;
+  padding-bottom: 0;
 }
 
 .button-group {
   display: flex;
-  gap: 8px;
+  gap: 0;
+  background-color: #f3f4f6;
+  padding: 4px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
 }
 
 .button-group button {
@@ -370,23 +381,27 @@ canvas {
   padding: 8px 12px;
   font-size: 12px;
   font-weight: 300;
-  border: 2px solid #e5e7eb;
+  border: none;
   border-radius: 6px;
-  background: #ffffff;
+  background: transparent;
   cursor: pointer;
   transition: all 0.2s ease;
+  color: #6b7280;
 }
 
 .button-group button:hover {
-  border-color: #d1d5db;
-  background-color: rgba(17, 24, 39, 0.03);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  background-color: rgba(255, 255, 255, 0.4);
 }
 
 .button-group button.active {
-  border-color: #d1d5db;
-  background-color: #f3f4f6;
-  font-weight: 500;
+  background-color: #ffffff;
+  font-weight: 400;
+  color: #111827;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.button-group + .slider-group {
+  margin-top: 6px;
 }
 
 .slider-group {

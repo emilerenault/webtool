@@ -114,9 +114,9 @@ function setup() {
   densiteContainer.parent(sectionDensite);
   densiteContainer.class('slider-group');
 
-  // Slider inversé: 0-50 où 50 = beaucoup de formes, 0 = peu
-  // On stocke la valeur réelle de densité (5-50px) mais le slider va de 0 à 50 (%) 
-  curseurDensite = createSlider(0, 50, 50 - (densite - 5), 1);
+  // Slider inversé: 0-100 où 100 = beaucoup de formes, 0 = peu
+  // On stocke la valeur réelle de densité (5-55px) mais le slider va de 0 à 100 (%) 
+  curseurDensite = createSlider(0, 100, 100 - (densite - 5) * 2, 1);
   curseurDensite.parent(densiteContainer);
   curseurDensite.class('slider');
   curseurDensite.style('flex', '1');
@@ -128,7 +128,7 @@ function setup() {
   curseurDensite.input(() => {
     // Inverser: 100% - valeur pour que plus on va à droite, plus il y a de formes
     let sliderValue = curseurDensite.value();
-    densite = 55 - sliderValue; // Convertir le pourcentage en espacement (5-50px)
+    densite = 55 - (sliderValue * 0.5); // Convertir le pourcentage en espacement (5-55px)
     valeurDensite.html(sliderValue + '%');
     necesiteRedessiner = true;
   });
