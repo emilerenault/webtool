@@ -218,96 +218,93 @@ canvas {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-/* Shape tabs/onglets */
+/* Shape toggles (icônes) + onglets texte */
+.shape-toggle-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.shape-toggle-btn {
+  flex: 1;
+  padding: 8px 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.18s ease;
+  color: #111827;
+  opacity: 0.75;
+}
+
+.shape-toggle-btn:hover {
+  opacity: 1;
+  transform: translateY(-1px) scale(1.04);
+}
+
+.shape-toggle-btn.active {
+  opacity: 1;
+  color: #111827;
+}
+
+.shape-toggle-btn.inactive {
+  opacity: 0.3;
+  filter: grayscale(0.6);
+}
+
+.shape-toggle-icon {
+  font-size: 40px;
+  line-height: 1;
+  user-select: none;
+}
+
+.shape-toggle-btn--triangle .shape-toggle-icon {
+  font-size: 40px;
+  transform: translateY(1px) scale(0.6);
+}
+
 .shapes-grid {
   display: flex;
-  flex-direction: row;
-  gap: 4px;
-  overflow: hidden;
-  border-radius: 8px 8px 0 0;
-  background-color: #f3f4f6;
+  gap: 0;
+  border-radius: 10px 10px 0 0;
+  background-color: #ffffff;
+  padding: 0;
+  border: 1px solid #e5e7eb;
+  border-bottom: none;
 }
 
-.shape-btn {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0;
-  padding: 16px 8px;
+.shape-tab-btn {
   flex: 1;
-  border: none !important;
-  border-radius: 8px 8px 0 0 !important;
+  padding: 14px 12px;
+  border-radius: 0;
+  border: 1px solid transparent;
+  border-bottom: 1px solid #e5e7eb;
   background: #f3f4f6;
   cursor: pointer;
-  transition: all 0.2s;
-  font-size: 12px;
-  font-weight: 300;
-  justify-content: center;
-  overflow: visible;
-  opacity: 0.6;
+  font-size: 13px !important;
+  font-weight: 300 !important;
+  color: #374151;
+  opacity: 0.4;
+  transition: all 0.18s ease;
 }
 
-.shape-btn:hover {
-  opacity: 0.7;
+.shape-tab-btn:hover {
+  background: #e5e7eb;
+  color: #111827;
 }
 
-.shape-label.active {
+.shape-tab-btn.active-tab {
+  background: #ffffff;
+  color: #111827;
+  border: 1px solid #e5e7eb;
+  border-bottom: 1px solid #ffffff;
+  border-radius: 10px 10px 0 0;
   opacity: 1;
-}
-
-.shape-btn.active-tab {
-  background-color: #ffffff;
-  opacity: 1;
-  margin-bottom: 0;
-  border-bottom: 2px solid #111827;
-}
-
-.shape-icon {
-  font-size: 28px;
-  line-height: 1;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  user-select: none;
-}
-
-.shape-icon:hover {
-  opacity: 0.8;
-  transform: scale(1.1);
-}
-
-.shape-btn--cercle .shape-icon {
-  font-size: 40px;
-}
-
-.shape-btn--carre .shape-icon {
-  font-size: 40px;
-}
-
-.shape-btn--triangle .shape-icon {
-  font-size: 24px;
-  transform: translateY(2px);
-}
-
-.shape-btn--triangle .shape-icon:hover {
-  transform: translateY(2px) scale(1.1);
-}
-
-.shape-label {
-  font-size: 10px;
-  text-align: center;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  user-select: none;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.shape-label:hover {
-  opacity: 0.8;
-  font-weight: 600;
+  font-weight: 500 !important;
+  font-size: 13px !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6), 0 2px 6px rgba(0, 0, 0, 0.04);
 }
 
 /* Checkboxes - SUPPRIMÉ car remplacé par les icônes interactives */
@@ -315,11 +312,19 @@ canvas {
 /* Shape settings container */
 .shape-settings {
   background-color: #ffffff;
-  border-radius: 0 0 8px 8px;
+  border-radius: 0 0 10px 10px;
   padding: 20px;
+  border: 1px solid #e5e7eb;
+  border-top: none;
   display: flex;
   flex-direction: column;
   gap: 16px;
+  transition: opacity 0.2s ease;
+}
+
+.shape-settings.inactive {
+  opacity: 0.4;
+  pointer-events: none;
 }
 
 .shape-settings-header {

@@ -45,7 +45,7 @@ let necesiteRedessiner = true;
 let melangerFormes = true;
 let afficherCercles = true;
 let afficherCarres = true;
-let afficherTriangles = true;
+let afficherTriangles = false;
 
 // ============================================================================
 // FONCTION : setup()
@@ -89,7 +89,7 @@ function setup() {
     necesiteRedessiner = true;
   });
 
-  let btnAleatoire = createButton('Aléatoire');
+  let btnAleatoire = createButton('Libre');
   btnAleatoire.parent(dispositionButtons);
   btnAleatoire.class('disposition-btn');
   btnAleatoire.style('flex', '1');
@@ -143,43 +143,29 @@ function setup() {
   labelFormes.class('section-heading');
   labelFormes.style('margin', '0 0 12px 0');
 
-  // Grille de sélection des formes
-  let shapesGrid = createDiv();
-  shapesGrid.parent(sectionFormes);
-  shapesGrid.class('shapes-grid');
-
-  let shapeButtonsRefs = {};
   const shapesConfig = {
-    cercle: { label: 'Cercle', iconActive: '●', iconInactive: '○' },
-    carre: { label: 'Carré', iconActive: '■', iconInactive: '□' },
-    triangle: { label: 'Triangle', iconActive: '▲', iconInactive: '△' }
+    cercle: { label: 'Rond', icon: '●' },
+    carre: { label: 'Carré', icon: '■' },
+    triangle: { label: 'Triangle', icon: '▲' }
   };
 
   let activeShape = 'cercle';
 
+  // Rangée d'icônes (toggle affichage des formes)
+  let shapeToggleRow = createDiv();
+  shapeToggleRow.parent(sectionFormes);
+  shapeToggleRow.class('shape-toggle-row');
+
+  let shapeToggleRefs = {};
+
   Object.entries(shapesConfig).forEach(([key, config]) => {
-    // Créer un élément button custom avec structure HTML personnalisée
-    let shapeBtn = createButton('');
-    shapeBtn.parent(shapesGrid);
-    shapeBtn.class('shape-btn');
-    shapeBtn.elt.classList.add(`shape-btn--${key}`);
-    if (key === 'cercle') shapeBtn.elt.classList.add('active-tab');
-    
-    // Déterminer l'icône initiale selon l'état d'affichage
-    let initialIcon = (key === 'cercle' ? afficherCercles : key === 'carre' ? afficherCarres : afficherTriangles) 
-      ? config.iconActive 
-      : config.iconInactive;
-    
-    // Créer la structure HTML interne du bouton
-    shapeBtn.elt.innerHTML = `
-      <div class="shape-icon">${initialIcon}</div>
-    `;
-    
-    let iconElement = shapeBtn.elt.querySelector('.shape-icon');
-    
-    // Clique sur l'icône : toggle la forme
-    iconElement.addEventListener('click', (e) => {
-      e.stopPropagation();
+    let toggleBtn = createButton('');
+    toggleBtn.parent(shapeToggleRow);
+    toggleBtn.class('shape-toggle-btn');
+    toggleBtn.elt.classList.add(`shape-toggle-btn--${key}`);
+    toggleBtn.elt.innerHTML = `<span class="shape-toggle-icon">${config.icon}</span>`;
+
+    toggleBtn.mousePressed(() => {
       if (key === 'cercle') {
         afficherCercles = !afficherCercles;
       } else if (key === 'carre') {
@@ -187,28 +173,58 @@ function setup() {
       } else if (key === 'triangle') {
         afficherTriangles = !afficherTriangles;
       }
-      
-      // Mettre à jour l'icône
-      let isActive = (key === 'cercle' ? afficherCercles : key === 'carre' ? afficherCarres : afficherTriangles);
-      iconElement.textContent = isActive ? config.iconActive : config.iconInactive;
-      
       melangerFormes = afficherCercles || afficherCarres || afficherTriangles;
+      updateToggleStates();
+      updateShapeSettingsOpacity();
       necesiteRedessiner = true;
-    });
-    
-    // Clique sur le reste du bouton : sélectionner la forme pour éditer
-    shapeBtn.elt.addEventListener('click', (e) => {
-      // Ne pas changer de tab si on clique sur l'icône (gestion du toggle)
-      if (e.target.closest('.shape-icon')) return;
-      
-      activeShape = key;
-      document.querySelectorAll('.shape-btn').forEach(btn => btn.classList.remove('active-tab'));
-      shapeBtn.elt.classList.add('active-tab');
-      necesiteRedessiner = true;
-      updateShapeSettings(key);
     });
 
-    shapeButtonsRefs[key] = { btn: shapeBtn, icon: iconElement };
+    shapeToggleRefs[key] = toggleBtn;
+  });
+
+  function updateToggleStates() {
+    Object.entries(shapeToggleRefs).forEach(([key, btn]) => {
+      let isActive = key === 'cercle' ? afficherCercles : key === 'carre' ? afficherCarres : afficherTriangles;
+      btn.elt.classList.toggle('active', isActive);
+      btn.elt.classList.toggle('inactive', !isActive);
+    });
+  }
+
+  function updateShapeSettingsOpacity() {
+    let shapeSettingsContainer = document.getElementById('shape-settings-container');
+    if (shapeSettingsContainer) {
+      let isShapeActive = (activeShape === 'cercle' && afficherCercles) ||
+                          (activeShape === 'carre' && afficherCarres) ||
+                          (activeShape === 'triangle' && afficherTriangles);
+      shapeSettingsContainer.classList.toggle('inactive', !isShapeActive);
+    }
+  }
+
+  updateToggleStates();
+
+  // Onglets texte pour choisir la forme à régler
+  let shapesGrid = createDiv();
+  shapesGrid.parent(sectionFormes);
+  shapesGrid.class('shapes-grid');
+
+  let shapeTabRefs = {};
+
+  Object.entries(shapesConfig).forEach(([key, config]) => {
+    let tabBtn = createButton(config.label);
+    tabBtn.parent(shapesGrid);
+    tabBtn.class('shape-tab-btn');
+    tabBtn.elt.classList.add(`shape-tab-btn--${key}`);
+    if (key === activeShape) tabBtn.elt.classList.add('active-tab');
+
+    tabBtn.mousePressed(() => {
+      activeShape = key;
+      document.querySelectorAll('.shape-tab-btn').forEach(btn => btn.classList.remove('active-tab'));
+      tabBtn.elt.classList.add('active-tab');
+      updateShapeSettings(key);
+      updateShapeSettingsOpacity();
+    });
+
+    shapeTabRefs[key] = tabBtn;
   });
 
   // Conteneur pour les réglages de la forme active
@@ -227,12 +243,6 @@ function setup() {
     
     let container = document.getElementById('shape-settings-container');
     container.innerHTML = '';
-
-    let header = createDiv();
-    header.parent(container);
-    header.class('shape-settings-header');
-    let iconSpan = createSpan('Réglages ' + shapesConfig[shapeType].label.toLowerCase());
-    iconSpan.parent(header.elt);
 
     // STYLE
     let styleGroup = createDiv();
@@ -340,7 +350,7 @@ function setup() {
       necesiteRedessiner = true;
     });
 
-    let btnRandom = createButton('Aléatoire');
+    let btnRandom = createButton('Variable');
     btnRandom.parent(sizeButtonGroup.elt);
     if (!isUniform) btnRandom.elt.classList.add('active');
     btnRandom.mousePressed(() => {
