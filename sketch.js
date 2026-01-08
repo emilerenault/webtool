@@ -60,9 +60,51 @@ function setup() {
   panneauControle.id('panneauControle');
 
   // ===== TITRE DU PANNEAU =====
+  let titreContainer = createDiv();
+  titreContainer.parent(panneauControle);
+  titreContainer.class('titre-container');
+
   let titre = createP('Générateur de mosaïque');
-  titre.parent(panneauControle);
+  titre.parent(titreContainer);
   titre.class('titre');
+  titre.style('margin', '0').style('padding-bottom', '0').style('border-bottom', 'none');
+
+  let infoBtn = createButton('i');
+  infoBtn.parent(titreContainer);
+  infoBtn.class('info-btn');
+  infoBtn.mousePressed(() => {
+    document.getElementById('info-modal').style.display = 'flex';
+  });
+
+  // Créer le modal d'information
+  let modal = createDiv();
+  modal.id('info-modal');
+  modal.class('modal');
+  modal.elt.innerHTML = `
+    <div class="modal-content">
+      <span class="modal-close">&times;</span>
+      <h2>À propos</h2>
+      <p>Cet outil génère des compositions visuelles basées sur un système de formes géométriques et de couleurs CMYK. Chaque élément est positionné selon une grille ou une disposition libre, permettant de créer des patterns uniques et des mosaïques graphiques personnalisables.</p>
+      <p>Le principe est fondé sur la répétition de formes géométriques simples (ronds, carrés, triangles), offrant un contrôle fin sur la densité, la taille, la transparence et le style de chaque forme.</p>
+      <hr>
+      <p class="credit"><strong>Crédit artistique</strong><br>Cette approche visuelle s'inspire du travail de <a href="https://p5js.org/sketches/2225254/" target="_blank" rel="noopener">Yutorehito_</a>, artiste dont les explorations génératives autour des formes et des couleurs ont guidé le développement de cet outil.</p>
+      <p class="credit"><strong>Typographie</strong><br><a href="https://fonts.google.com/specimen/Fredoka" target="_blank" rel="noopener">Fredoka</a> — Google Fonts</p>
+      <hr>
+      <p class="signature">Projet étudiant en web design réalisé par <a href="https://www.linkedin.com/in/emilerenault" target="_blank" rel="noopener">Emile Renault</a></p>
+    </div>
+  `;
+  modal.parent(document.body);
+
+  // Gérer la fermeture du modal
+  document.querySelector('.modal-close').onclick = function() {
+    document.getElementById('info-modal').style.display = 'none';
+  };
+
+  document.getElementById('info-modal').onclick = function(event) {
+    if (event.target.id === 'info-modal') {
+      document.getElementById('info-modal').style.display = 'none';
+    }
+  };
 
   // ===== SECTION 1 : DISPOSITION =====
   let sectionDisposition = createDiv();
@@ -398,21 +440,21 @@ function setup() {
     alphaSliderGroup.class('slider-group');
 
     let currentAlpha = shapeType === 'cercle' ? opaciteFormeCercles : (shapeType === 'carre' ? opaciteFormeCarres : opaciteFormeTriangles);
-    let alphaSlider = createSlider(0, 1, currentAlpha, 0.01);
+    let alphaSlider = createSlider(0, 1, 1 - currentAlpha, 0.01);
     alphaSlider.parent(alphaSliderGroup.elt);
     alphaSlider.class('slider');
     alphaSlider.style('flex', '1');
 
-    let alphaValue = createDiv(floor(currentAlpha * 100) + '%');
+    let alphaValue = createDiv(floor((1 - currentAlpha) * 100) + '%');
     alphaValue.parent(alphaSliderGroup.elt);
     alphaValue.class('slider-value');
 
     alphaSlider.input(() => {
       let val = alphaSlider.value();
       alphaValue.html(floor(val * 100) + '%');
-      if (shapeType === 'cercle') opaciteFormeCercles = val;
-      else if (shapeType === 'carre') opaciteFormeCarres = val;
-      else if (shapeType === 'triangle') opaciteFormeTriangles = val;
+      if (shapeType === 'cercle') opaciteFormeCercles = 1 - val;
+      else if (shapeType === 'carre') opaciteFormeCarres = 1 - val;
+      else if (shapeType === 'triangle') opaciteFormeTriangles = 1 - val;
       necesiteRedessiner = true;
     });
   }

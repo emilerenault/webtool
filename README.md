@@ -19,34 +19,43 @@ Une fois la mosaïque finalisée, l’utilisateur peut l’exporter aux formats 
 
 L’objectif est d’offrir une expérience de création **simple, guidée et personnalisable**, adaptée aussi bien aux débutants qu’aux utilisateurs plus curieux.  
 L’interface permet d’ajuster facilement différents paramètres visuels, tout en garantissant une prise en main rapide et sans surcharge.
+## 👤 À propos du projet
 
+Ce projet est un **outil étudiant en web design**, développé par **Emile Renault**.  
+
+L'approche visuelle s'inspire fortement du travail de [Yutorehito_](https://p5js.org/sketches/2225254/), artiste dont les explorations génératives autour des formes et des couleurs ont guidé le développement de cet outil.
+
+**Typographie :** [Fredoka](https://fonts.google.com/specimen/Fredoka) — Google Fonts
 ## ⚙️ Fonctionnement
 
 L’outil repose sur une interface graphique comprenant plusieurs contrôles :
 
-- **Choix de la forme**  
-  Sélection parmi un ensemble de formes prédéfinies.
+- **Disposition**  
+  Choix entre une grille régulière ou une disposition libre (aléatoire).
 
-- **Paramètres visuels**  
-  Ajustement de la couleur, de la taille, de la densité ou de la rotation.
+- **Densité**  
+  Slider ajustant l'espacement entre les formes (0-100%).
 
-- **Organisation de la mosaïque**  
-  Définition de la grille, du nombre d’éléments et de leur disposition.
+- **Formes**  
+  Trois formes géométriques disponibles : **Rond**, **Carré**, **Triangle**.
+  - Toggles d'activation/désactivation pour chaque forme
+  - Style : Remplissage ou Tracé
+  - Taille : Uniforme ou Variable
+  - Transparence : Slider 0-100% (0% = opaque, 100% = transparent)
+  - Épaisseur du tracé (si le style Tracé est activé)
 
-- **Variations automatiques**  
-  → Possibilité d’activer des variations automatiques (couleurs aléatoires, motifs génératifs, etc.).
+- **Couleurs**  
+  Ajustement des 4 canaux CMYK (Cyan, Magenta, Yellow, Black).
 
 - **Prévisualisation en temps réel**  
-  La mosaïque se met à jour instantanément dans le canevas.
+  Le canvas se met à jour instantanément lors de chaque modification.
 
 
 ## 💾 Export
 
-Une fois la composition finalisée, l’utilisateur peut exporter son visuel dans les formats :
+Une fois la composition finalisée, l'utilisateur peut exporter son visuel en :
 
-- **PNG**  
-- **SVG**  
-- **JPG**
+- **PNG** (1920×1080px)
 
 ## 🧩 Snippets
 ### circle()
