@@ -26,7 +26,7 @@ L’interface permet d’ajuster facilement différents paramètres visuels, tou
 
 Ce projet est un **outil étudiant en web design**, développé par **Emile Renault**.  
 
-L'approche visuelle s'inspire fortement du travail de [Yutorehito_](https://p5js.org/sketches/2225254/), artiste dont les explorations génératives autour des formes et des couleurs ont guidé le développement de cet outil.
+L'approche visuelle s'inspire du travail de [Yutorehito_](https://p5js.org/sketches/2225254/), artiste dont les explorations génératives autour des formes et des couleurs ont guidé le développement de cet outil.
 
 **Typographie :** [Fredoka](https://fonts.google.com/specimen/Fredoka) — Google Fonts
 ## ⚙️ Fonctionnement
