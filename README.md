@@ -1,4 +1,7 @@
 # Générateur de mosaïque — Webtool
+
+![Générateur de mosaïque](./images/5.png)
+
 ***Mots-clés :** forme, couleur, densité*<br>
 
 **Références :**

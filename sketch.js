@@ -73,7 +73,12 @@ function setup() {
   infoBtn.parent(titreContainer);
   infoBtn.class('info-btn');
   infoBtn.mousePressed(() => {
-    document.getElementById('info-modal').style.display = 'flex';
+    const modalEl = document.getElementById('info-modal');
+    const modalContentEl = modalEl.querySelector('.modal-content');
+    // Réinitialiser l'état de fermeture et afficher
+    modalEl.classList.remove('closing');
+    modalContentEl.classList.remove('closing');
+    modalEl.style.display = 'flex';
   });
 
   // Créer le modal d'information
@@ -95,14 +100,24 @@ function setup() {
   `;
   modal.parent(document.body);
 
-  // Gérer la fermeture du modal
-  document.querySelector('.modal-close').onclick = function() {
-    document.getElementById('info-modal').style.display = 'none';
-  };
+  // Gérer la fermeture du modal (animation inverse)
+  function closeInfoModal() {
+    const modalEl = document.getElementById('info-modal');
+    const modalContentEl = modalEl.querySelector('.modal-content');
+    modalEl.classList.add('closing');
+    modalContentEl.classList.add('closing');
+    modalContentEl.addEventListener('animationend', () => {
+      modalEl.style.display = 'none';
+      modalEl.classList.remove('closing');
+      modalContentEl.classList.remove('closing');
+    }, { once: true });
+  }
+
+  document.querySelector('.modal-close').onclick = closeInfoModal;
 
   document.getElementById('info-modal').onclick = function(event) {
     if (event.target.id === 'info-modal') {
-      document.getElementById('info-modal').style.display = 'none';
+      closeInfoModal();
     }
   };
 
@@ -525,9 +540,10 @@ function setup() {
   sectionBoutons.parent(panneauControle);
   sectionBoutons.class('button-group-section');
 
-  let btnDownload = createButton('⬇ Télécharger PNG');
+    let btnDownload = createButton('');
   btnDownload.parent(sectionBoutons);
   btnDownload.class('btn-telecharger');
+  btnDownload.elt.innerHTML = `<svg style="width: 14px; height: 14px; margin-right: 6px; opacity: 0.7; display: inline-block; vertical-align: middle;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>Télécharger PNG`;
   btnDownload.mousePressed(() => {
     telechargerPNG();
   });

@@ -152,6 +152,31 @@ canvas {
   }
 }
 
+/* Animations de fermeture (inverse) */
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+}
+
+.modal.closing {
+  animation: fadeOut 0.2s ease forwards;
+}
+
+.modal-content.closing {
+  animation: slideDown 0.3s ease forwards;
+}
+
 .modal-content h2 {
   margin: 0 0 16px 0;
   font-size: 22px;
@@ -247,10 +272,11 @@ canvas {
   font-size: 14px;
   color: #374151;
   font-weight: 200;
-  background-color: #f3f4f6;
-  padding: 4px 12px;
-  border-radius: 6px;
+  background-color: transparent;
+  padding: 0;
+  border-radius: 0;
   text-align: center;
+  opacity: 0.6;
 }
 
 /* Select (dropdowns) */
@@ -392,7 +418,6 @@ canvas {
 
 .shape-toggle-btn:hover {
   opacity: 1;
-  transform: translateY(-1px) scale(1.04);
 }
 
 .shape-toggle-btn.active {
@@ -409,11 +434,22 @@ canvas {
   font-size: 40px;
   line-height: 1;
   user-select: none;
+  transition: transform 0.18s ease, text-shadow 0.18s ease;
+}
+
+.shape-toggle-btn:hover .shape-toggle-icon {
+  transform: translateY(-2px) scale(1.12);
+  text-shadow: 0 4px 12px rgba(17, 24, 39, 0.12);
 }
 
 .shape-toggle-btn--triangle .shape-toggle-icon {
   font-size: 40px;
   transform: translateY(1px) scale(0.6);
+}
+
+.shape-toggle-btn--triangle:hover .shape-toggle-icon {
+  transform: translateY(0px) scale(0.72);
+  text-shadow: 0 4px 12px rgba(17, 24, 39, 0.12);
 }
 
 .shapes-grid {
@@ -584,15 +620,16 @@ canvas {
 }
 
 .slider-value {
-  width: 56px;
+  width: 44px;
   text-align: center;
   font-size: 12px;
   font-weight: 400;
   color: #374151;
-  background-color: #ffffff;
-  padding: 4px 8px;
-  border-radius: 4px;
+  background-color: transparent;
+  padding: 0;
+  border-radius: 0;
   flex-shrink: 0;
+  opacity: 0.6;
 }
 
 /* Colors section */
@@ -698,7 +735,7 @@ input[type="color"]::-moz-color-swatch {
 
 /* Bouton téléchargement */
 #panneauControle .btn-telecharger {
-  background-color: #69676a;
+  background-color: #393a3d;
   color: #ffffff;
   border: none;
 }
@@ -709,7 +746,7 @@ input[type="color"]::-moz-color-swatch {
 }
 
 #panneauControle .btn-telecharger:active {
-  background-color: #002454;
+  background-color: #2d2c2ecf;
   transform: translateY(0);
 }
 
