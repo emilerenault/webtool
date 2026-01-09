@@ -13,6 +13,10 @@
 Un outil web simple et intuitif permettant de générer une mosaïque graphique à partir de formes prédéfinies.  
 Le projet met l’accent sur une **interface claire et accessible**, permettant à l’utilisateur de personnaliser son visuel sans difficulté.
 
+## 🧭 Wireframe (Figma)
+
+[Consulter le wireframe](https://www.figma.com/design/RQtcDjYxHPZV2aRDp0TgGo/Creative-coding---Web-tool?node-id=1-2&t=p7geNC8aIKLlcMq5-1)
+
 ## 🎨 Concept
 
 Ce webtool permet de créer une mosaïque visuelle en sélectionnant et configurant des formes prédéfinies (**carrés, cercles, triangles, etc.**) via une interface dédiée.  
