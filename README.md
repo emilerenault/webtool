@@ -240,7 +240,22 @@ function draw() {
   rect(50, 0, 40, 20);
 }
 ```
-![alt text](image.png)
+
+## 🖼️ Exemples de génération
+
+Voici différentes compositions générées avec le Générateur de mosaïque :
+
+![Exemple 1](./images/1.jpg)
+
+![Exemple 2](./images/2.png)
+
+![Exemple 3](./images/3.png)
+
+![Exemple 4](./images/4.png)
+
+![Exemple 6](./images/6.png)
+
+![Exemple 7](./images/7.png)
 
 
-  
+
