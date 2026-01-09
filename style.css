@@ -440,6 +440,7 @@ canvas {
 .shape-toggle-btn:hover .shape-toggle-icon {
   transform: translateY(-2px) scale(1.12);
   text-shadow: 0 4px 12px rgba(17, 24, 39, 0.12);
+  filter: drop-shadow(0 0 8px rgba(17, 24, 39, 0.3));
 }
 
 .shape-toggle-btn--triangle .shape-toggle-icon {
@@ -450,6 +451,7 @@ canvas {
 .shape-toggle-btn--triangle:hover .shape-toggle-icon {
   transform: translateY(0px) scale(0.72);
   text-shadow: 0 4px 12px rgba(17, 24, 39, 0.12);
+  filter: drop-shadow(0 0 8px rgba(17, 24, 39, 0.3));
 }
 
 .shapes-grid {
